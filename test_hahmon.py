@@ -7,6 +7,7 @@ Test program for hahmon (Home Automation Host Monitor)
 import update_hahmon
 import unittest
 import inspect
+import pathlib
 
 def unittest_verbosity():
     """Return the verbosity setting of the currently running unittest
@@ -24,11 +25,29 @@ def unittest_verbosity():
 test_DB_name = "ha_test.db"
 
 class UpdateHAmonTest(unittest.TestCase):
-     def test_create_database(self):
-         print("update_hahmon.create_database(test_DB_name)",
-                update_hahmon.create_database(test_DB_name), "\n")
-         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
-                "call create_database()")
 
+    def test_create_database(self):
+        dp_path=pathlib.Path(test_DB_name)
+
+        if pathlib.Path.is_dir(dp_path):
+            pathlib.Path.rmdir(dp_path)
+        elif pathlib.Path.is_file(dp_path):
+            pathlib.Path.unlink(dp_path)
+
+        self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
+                        "call create_database()")
+
+        self.assertEqual(update_hahmon.create_database(test_DB_name), 1,
+                        "call create_database(), exists")
+
+        pathlib.Path.unlink(dp_path)
+        pathlib.Path.mkdir(dp_path)
+
+        self.assertEqual(update_hahmon.create_database(test_DB_name), 2,
+                        "call create_database(), exists")
+        
+        pathlib.Path.rmdir(dp_path)
+
+        
 if __name__ == "__main__": 
     unittest.main()
