@@ -33,7 +33,8 @@ uses Python3 and the SQLite database.
 
 * Mosquitto package client. (`apt install mosquitto-clients` on Debian and related distros.)
 * Program to report exceptions `sa.sh`. One I use is
-```
+
+```shell
 #!/bin/sh
 
 # Script to send alarm notifications to gmail
