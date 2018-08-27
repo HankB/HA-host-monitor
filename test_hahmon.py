@@ -23,16 +23,18 @@ def unittest_verbosity():
     return 0
 
 test_DB_name = "ha_test.db"
+dp_path=pathlib.Path(test_DB_name)
 
 class UpdateHAmonTest(unittest.TestCase):
 
-    def test_create_database(self):
-        dp_path=pathlib.Path(test_DB_name)
-
+    def setUpClass():
+        print("run setup")
         if pathlib.Path.is_dir(dp_path):
             pathlib.Path.rmdir(dp_path)
         elif pathlib.Path.is_file(dp_path):
             pathlib.Path.unlink(dp_path)
+
+    def test_create_database(self):
 
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
                         "call create_database()")
@@ -48,6 +50,10 @@ class UpdateHAmonTest(unittest.TestCase):
         
         pathlib.Path.rmdir(dp_path)
 
-        
+    def test_insert_host(self):
+        self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
+                        "call create_database()")
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
 if __name__ == "__main__": 
     unittest.main()
