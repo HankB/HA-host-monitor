@@ -21,7 +21,30 @@ Database schema:
     (All fields text except for timeout which is an integer.)
 
 """
+import sqlite3
+import atexit
+import os
 
-def create_database(name):
+def close_connection(some_con):
+    some_con.commit()
+    some_con.close()
+
+# Create table
+def create_database(db_name):
+    if os.path.isfile(db_name):
+        return 1
+    try:
+        conn = sqlite3.connect(db_name)
+        atexit.register(close_connection, conn)
+        c = conn.cursor()
+
+        st = c.execute('''CREATE TABLE host_activity
+                (timestamp INTEGER, 
+                host TEXT, 
+                status TEXT, 
+                topic TEXT)''')
+    except:
+        return 2
+
     return 0
 
