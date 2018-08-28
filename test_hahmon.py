@@ -8,6 +8,9 @@ import update_hahmon
 import unittest
 import inspect
 import pathlib
+import os
+import time
+import subprocess
 
 def unittest_verbosity():
     """Return the verbosity setting of the currently running unittest
@@ -54,9 +57,28 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
                         "call create_database()")
 
+        # test insert, before and after times prevent race condition in subsequent test
+        # Assumes it will not take more than one second to insert a line.
+        timestamp_before = str(int(time.time()))
         self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60), 0,
                         "call insert_host()")
+        timestamp_after = str(int(time.time()))
+        with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
+            db_content= db_read.read()
 
+        self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+'''
+        # repeat insert should be rejected. DB contents should remain the same
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60), 1,
+                        "call insert_host()")
+
+        with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
+            db_content= db_read.read()
+
+        self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+'''
        # pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
 if __name__ == "__main__": 
