@@ -62,6 +62,12 @@ def create_database(db_name):
     return 0
 
 def insert_host(db_name, name, timeout, topic=None):
+    """ Add a host to the database. Return an appropriate status:
+    0 - Added
+    1 - duplicate - host/topic already exists.
+    2 - overlap - host exists but requiested topic or existing topic is None
+    3 - some other error
+    """
     conn = open_database(db_name)
     c = conn.cursor()
     records = c.execute('select * from host_activity where host="'+name+'"')
@@ -73,6 +79,6 @@ def insert_host(db_name, name, timeout, topic=None):
     for row in records:
         print(row)
     if conn == None:
-        return 2
+        return 3
     return 0
 
