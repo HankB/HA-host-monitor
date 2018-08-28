@@ -13,38 +13,66 @@ Usage:
 To destroy the database simply delete the database file.
 
 Database schema:
-    host    Hostname of publisher.
-    topic   MQTT topic if one is specified.
-    timeout Time at which the publisher is presumed to be unresponsive.
-    status  Status of this host (and perhaps topic) [unknown|alive|late]
+    host        Hostname of publisher.
+    topic       MQTT topic if one is specified.
+    timeout     Time at which the publisher is presumed to be unresponsive.
+    timestamp   Time host last published (or when added to database.)
+    status      Status of this host (and perhaps topic) [unknown|alive|late]
 
-    (All fields text except for timeout which is an integer.)
+    (All fields text except for timeout and since which are integers.)
 
 """
 import sqlite3
 import atexit
 import os
+import time
 
 def close_connection(some_con):
     some_con.commit()
     some_con.close()
+
+def open_database(db_name):
+    try:
+        conn = sqlite3.connect(db_name)
+        atexit.register(close_connection, conn)
+        return conn
+    except:
+        return None
+
 
 # Create table
 def create_database(db_name):
     if os.path.isfile(db_name):
         return 1
     try:
-        conn = sqlite3.connect(db_name)
-        atexit.register(close_connection, conn)
+        conn = open_database(db_name)
         c = conn.cursor()
 
         st = c.execute('''CREATE TABLE host_activity
-                (timestamp INTEGER, 
-                host TEXT, 
-                status TEXT, 
-                topic TEXT)''')
+                (
+                host        TEXT, 
+                topic       TEXT,
+                timeout     INTEGER,
+                timestamp   INTEGER,
+                status      TEXT
+                )''')
     except:
         return 2
 
+    return 0
+
+def insert_host(db_name, name, timeout, topic=None):
+    conn = open_database(db_name)
+    c = conn.cursor()
+    records = c.execute('select * from host_activity where host="'+name+'"')
+
+    c.execute('''insert into host_activity values(?,?,?,?,?)''', (name, topic, int(time.time()), timeout, "unknown", ))
+    conn.commit()
+    records = c.execute('select * from host_activity where host="'+name+'"')
+    print( "queried and found ", records.rowcount , " records\n")
+    for row in records:
+        print(row)
+    if conn == None:
+        return 2
     return 0
 
