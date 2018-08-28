@@ -27,8 +27,8 @@ dp_path=pathlib.Path(test_DB_name)
 
 class UpdateHAmonTest(unittest.TestCase):
 
-    def setUpClass():
-        print("run setup")
+    @classmethod
+    def setUpClass(UpdateHAmonTest):
         if pathlib.Path.is_dir(dp_path):
             pathlib.Path.rmdir(dp_path)
         elif pathlib.Path.is_file(dp_path):
@@ -53,7 +53,11 @@ class UpdateHAmonTest(unittest.TestCase):
     def test_insert_host(self):
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
                         "call create_database()")
-        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60), 0,
+                        "call insert_host()")
+
+       # pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
 if __name__ == "__main__": 
     unittest.main()
