@@ -79,6 +79,42 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
                         (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
 
+        # Test insert with topic
+        timestamp_before = str(int(time.time()))
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60, "x"), 0,
+                        "call insert_host()")
+        timestamp_after = str(int(time.time()))
+        with os.popen('''sqlite3 ha_test.db "select * from host_activity
+                        where host=\'oak\' and topic=\'x\'"''') as db_read:
+            db_content= db_read.read()
+
+        self.assertTrue((db_content == "oak|x|"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "oak|x|"+timestamp_after+"|3600|unknown\n"),
+                                       "DB content match" )
+
+        # test duplicate rejection with topic
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60, "x"), 1,
+                        "call insert_host()")
+        with os.popen('''sqlite3 ha_test.db "select * from host_activity
+                        where host=\'oak\' and topic=\'x\'"''') as db_read:
+            db_content= db_read.read()
+
+        self.assertTrue((db_content == "oak|x|"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "oak|x|"+timestamp_after+"|3600|unknown\n"),
+                                       "DB content match" )
+        # Test insert with different topic
+        timestamp_before = str(int(time.time()))
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60, "y"), 0,
+                        "call insert_host()")
+        timestamp_after = str(int(time.time()))
+        with os.popen('''sqlite3 ha_test.db "select * from host_activity
+                        where host=\'oak\' and topic=\'y\'"''') as db_read:
+            db_content= db_read.read()
+
+        self.assertTrue((db_content == "oak|y|"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "oak|y|"+timestamp_after+"|3600|unknown\n"),
+                                       "DB content match" )
+
         # comment next line to allow manual examination of database
         # pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
