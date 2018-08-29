@@ -61,24 +61,46 @@ def create_database(db_name):
 
     return 0
 
+def host_match(cursor, name, topic):
+    """ Check for matches with supplied values 
+    0 - no matches
+    -1 - error
+    n - number of matching rows (should be only 1)"""
+    try:
+        if topic is None:
+            records = cursor.execute('''select count(*) from host_activity 
+                where host=? and topic is NULL''', (name,))
+        else:
+            records = cursor.execute('''select count(*) from host_activity 
+                where host=? and topic=?''', (name,topic,))
+        return records.fetchone()[0]
+    except:
+        return -1
+
 def insert_host(db_name, name, timeout, topic=None):
     """ Add a host to the database. Return an appropriate status:
     0 - Added
     1 - duplicate - host/topic already exists.
-    2 - overlap - host exists but requiested topic or existing topic is None
-    3 - some other error
+    2 - some other error
     """
     conn = open_database(db_name)
-    c = conn.cursor()
-    records = c.execute('select * from host_activity where host="'+name+'"')
-
-    c.execute('''insert into host_activity values(?,?,?,?,?)''', (name, topic, int(time.time()), timeout, "unknown", ))
-    conn.commit()
-    records = c.execute('select * from host_activity where host="'+name+'"')
-    print( "queried and found ", records.rowcount , " records\n")
-    for row in records:
-        print(row)
     if conn == None:
-        return 3
-    return 0
+        return 2
+
+    try:
+        c = conn.cursor()
+        match_result = host_match(c, name, topic)
+        if match_result == 0:
+            c.execute('''insert into host_activity values(?,?,?,?,?)''', (name, topic, int(time.time()), timeout, "unknown", ))
+            conn.commit()
+            rc = 0
+        elif match_result == -1:
+            rc = 2
+        else:
+            rc = 1
+    except:
+        rc = 2
+
+    c.close()
+    return rc
 
