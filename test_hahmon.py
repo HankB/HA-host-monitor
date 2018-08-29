@@ -68,7 +68,7 @@ class UpdateHAmonTest(unittest.TestCase):
 
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
                         (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
-'''
+
         # repeat insert should be rejected. DB contents should remain the same
         self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60), 1,
                         "call insert_host()")
@@ -78,8 +78,9 @@ class UpdateHAmonTest(unittest.TestCase):
 
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
                         (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
-'''
-       # pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+        # comment next line to allow manual examination of database
+        # pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
 if __name__ == "__main__": 
     unittest.main()
