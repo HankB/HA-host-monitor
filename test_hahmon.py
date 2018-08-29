@@ -79,6 +79,19 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
                         (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
 
+        # test insert with a different host
+        timestamp_before = str(int(time.time()))
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "olive", 60*60), 0,
+                        "call insert_host()")
+        timestamp_after = str(int(time.time()))
+        with os.popen('''sqlite3 ha_test.db "select * from host_activity
+                        where host=\'olive\'"''') as db_read:
+            db_content= db_read.read()
+
+        self.assertTrue((db_content == "olive||"+timestamp_before+"|3600|unknown\n") or
+                        (db_content == "olive||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+
+
         # Test insert with topic
         timestamp_before = str(int(time.time()))
         self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 60*60, "x"), 0,
