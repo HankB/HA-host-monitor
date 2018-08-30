@@ -37,6 +37,24 @@ class UpdateHAmonTest(unittest.TestCase):
         elif pathlib.Path.is_file(dp_path):
             pathlib.Path.unlink(dp_path)
 
+    def validate_record(self, name, timestamp, timeout, topic=None):
+        """ Read record from DB matching key and topic and validate contents' """
+        if topic == None:
+            select='"select * from host_activity ' + \
+                        'where host=\''+name+'\' and topic is NULL"'
+                        
+        else:
+            select='"select * from host_activity '+ \
+                        'where host=\''+name+'\' and topic=\''+topic+'\'"'
+        with os.popen('sqlite3 ha_test.db '+select) as db_read:
+            db_content= db_read.read()
+
+        if topic == None:
+            topic=""
+
+        self.assertTrue((db_content == name+'|'+topic+'|'+str(timestamp)+'|'+str(timeout)+'|unknown\n') or
+                        (db_content == name+'|'+topic+'|'+str(timestamp+1)+'|'+str(timeout)+'|unknown\n' ))
+
     def test_create_database(self):
 
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
@@ -84,6 +102,7 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertEqual(update_hahmon.insert_host(test_DB_name, "olive", 60*60), 0,
                         "call insert_host()")
         timestamp_after = str(int(time.time()))
+
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'olive\'"''') as db_read:
             db_content= db_read.read()
@@ -129,7 +148,33 @@ class UpdateHAmonTest(unittest.TestCase):
                                        "DB content match" )
 
         # comment next line to allow manual examination of database
-        # pathlib.Path.unlink(pathlib.Path(test_DB_name))
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+
+    def test_update_host(self):
+        self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
+                        "call create_database()")
+        timestamp_before = int(time.time())
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 300), 0,
+                        "call insert_host()")
+        self.assertEqual(update_hahmon.insert_host(test_DB_name, "oak", 500, "/some/topic"), 0,
+                        "call insert_host()")
+        timestamp_after = int(time.time())
+        self.assertTrue(timestamp_after-timestamp_before <= 1, "test error: process took too long")
+
+        # Validate first and second record inserted
+        self.validate_record("oak",timestamp_before,300)
+        self.validate_record("oak",timestamp_before,500, "/some/topic")
+
+        # Update first record
+        self.assertEqual(update_hahmon.update_host(test_DB_name, "oak", 350), 0,
+                        "call update_host()")
+
+        # Validate first and second record inserted
+        self.validate_record("oak",timestamp_before,350)
+        self.validate_record("oak",timestamp_before,500, "/some/topic")
+
+
 
 if __name__ == "__main__": 
     unittest.main()
