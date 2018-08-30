@@ -125,7 +125,7 @@ def update_host(db_name, name, timeout, topic=None):
                         where host=? and topic is NULL''', (timeout, name, ))
             else:
                 c.execute('''update host_activity set timeout=?
-                        where host="?" and topic="?"''', (timeout, name, topic,))
+                        where host=? and topic=?''', (timeout, name, topic,))
             conn.commit()
             rc = 0
         elif match_result == -1:
@@ -136,5 +136,5 @@ def update_host(db_name, name, timeout, topic=None):
         rc = 2
     finally:
         c.close()
-        
+
     return rc
