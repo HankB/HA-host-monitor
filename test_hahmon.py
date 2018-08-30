@@ -174,6 +174,13 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,350)
         self.validate_record("oak",timestamp_before,500, "/some/topic")
 
+        self.assertEqual(update_hahmon.update_host(test_DB_name, "oak", 3000, "/some/topic"), 0,
+                        "call update_host()")
+
+        # Validate first and second record inserted
+        self.validate_record("oak",timestamp_before,350)
+        self.validate_record("oak",timestamp_before,3000, "/some/topic")
+
 
 
 if __name__ == "__main__": 
