@@ -52,8 +52,8 @@ def create_database(db_name):
                 (
                 host        TEXT, 
                 topic       TEXT,
-                timeout     INTEGER,
                 timestamp   INTEGER,
+                timeout     INTEGER,
                 status      TEXT
                 )''')
     except:
@@ -104,3 +104,37 @@ def insert_host(db_name, name, timeout, topic=None):
     c.close()
     return rc
 
+def update_host(db_name, name, timeout, topic=None):
+    """ Update a host/topic in the database. Return an appropriate status:
+    0 - Updated
+    1 - Host does not exist.
+    2 - some other error
+    NB: Only the timeout can be changed since the host and topic uniquely
+    identify the record.
+    """
+    conn = open_database(db_name)
+    if conn == None:
+        return 2
+
+    try:
+        c = conn.cursor()
+        match_result = host_match(c, name, topic)
+        if match_result == 1:
+            if topic == None:
+                c.execute('''update host_activity set timeout=?
+                        where host=? and topic is NULL''', (timeout, name, ))
+            else:
+                c.execute('''update host_activity set timeout=?
+                        where host="?" and topic="?"''', (timeout, name, topic,))
+            conn.commit()
+            rc = 0
+        elif match_result == -1:
+            rc = 2
+        else:
+            rc = 1
+    except:
+        rc = 2
+    finally:
+        c.close()
+        
+    return rc
