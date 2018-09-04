@@ -151,7 +151,7 @@ class UpdateHAmonTest(unittest.TestCase):
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
 
-    def test_update_host(self):
+    def test_update_host_timeout(self):
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
                         "call create_database()")
         timestamp_before = int(time.time())
@@ -167,14 +167,14 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,500, "/some/topic")
 
         # Update first record
-        self.assertEqual(update_hahmon.update_host(test_DB_name, "oak", 350), 0,
+        self.assertEqual(update_hahmon.update_host_timeout(test_DB_name, "oak", 350), 0,
                         "call update_host()")
 
         # Validate first and second record inserted
         self.validate_record("oak",timestamp_before,350)
         self.validate_record("oak",timestamp_before,500, "/some/topic")
 
-        self.assertEqual(update_hahmon.update_host(test_DB_name, "oak", 3000, "/some/topic"), 0,
+        self.assertEqual(update_hahmon.update_host_timeout(test_DB_name, "oak", 3000, "/some/topic"), 0,
                         "call update_host()")
 
         # Validate first and second record inserted

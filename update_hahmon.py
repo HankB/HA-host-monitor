@@ -104,8 +104,9 @@ def insert_host(db_name, name, timeout, topic=None):
     c.close()
     return rc
 
-def update_host(db_name, name, timeout, topic=None):
-    """ Update a host/topic in the database. Return an appropriate status:
+def update_host_timeout(db_name, name, timeout, topic=None):
+    """ Update timeout setting for a host/topic in the database.
+    Return an appropriate status:
     0 - Updated
     1 - Host does not exist.
     2 - some other error
