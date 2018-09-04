@@ -2,7 +2,7 @@
 
 """
 Create (if needed) and update host records for the home automation host 
-monitor.
+monitor. In other words, manage the database that the monitor works from.
 
 Usage:
     update_hahmon.py -a <hostname> [<topic>]    # add host to database
@@ -140,50 +140,3 @@ def update_host_timeout(db_name, name, timeout, topic=None):
 
     return rc
 
-def update_host_activity(db_name, str):
-    ''' Update the host timestamp value for the given activity. Input string
-    looks like
-    "home_automation/brandywine/roamer/outside_temp_humidity 1536080280, 92.36, 58.06"
-    where the host name is embedded in the 'topic' In this case the topic is
-    taken to be "home_automation/brandywine/roamer/outside_temp_humidity" and
-    the host is "brandywine". The timestamp is included in these messages by
-    convention but is taken form the system monitoring the feed.
-    Return an appropriate status:
-    0 - Updated
-    1 - Host/topic not found.
-    2 - some other error
-   '''
-    topic = str.split()[0]
-    host = topic.split('/')[1]
-
-    conn = open_database(db_name)
-    if conn == None:
-        return 2
-
-    try:
-        c = conn.cursor()
-        match_result = host_match(c, name, topic)
-        if match_result == 1: # host/topic found
-            c.execute('''update host_activity set timestamp=?
-                    where host=? and topic=?''', (int(time.time()), name, topic,))
-            conn.commit()
-            rc = 0
-        elif match_result == -1: # no match on host/topic
-            match_result = host_match(c, name, None) # see if host with no topic exists
-            if match_result == 1:   # host/None matchec
-                c.execute('''update host_activity set timestamp=?
-                        where host=? and topic=?''', (int(time.time()), name, topic,))
-                conn.commit()
-                rc = 0
-            elif match_result == -1: # still not found
-                rc = 1
-            else:
-                rc = 2
-        else:
-            rc = 2
-    except:
-        rc = 2
-    finally:
-        c.close()
-
-    return rc
