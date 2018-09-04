@@ -26,16 +26,16 @@ def unittest_verbosity():
     return 0
 
 test_DB_name = "ha_test.db"
-dp_path=pathlib.Path(test_DB_name)
+db_path=pathlib.Path(test_DB_name)
 
 class UpdateHAmonTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(UpdateHAmonTest):
-        if pathlib.Path.is_dir(dp_path):
-            pathlib.Path.rmdir(dp_path)
-        elif pathlib.Path.is_file(dp_path):
-            pathlib.Path.unlink(dp_path)
+        if pathlib.Path.is_dir(db_path):
+            pathlib.Path.rmdir(db_path)
+        elif pathlib.Path.is_file(db_path):
+            pathlib.Path.unlink(db_path)
 
     def validate_record(self, name, timestamp, timeout, topic=None):
         """ Read record from DB matching key and topic and validate contents' """
@@ -54,7 +54,7 @@ class UpdateHAmonTest(unittest.TestCase):
 
         self.assertTrue((db_content == name+'|'+topic+'|'+str(timestamp)+'|'+str(timeout)+'|unknown\n') or
                         (db_content == name+'|'+topic+'|'+str(timestamp+1)+'|'+str(timeout)+'|unknown\n' ))
-
+    
     def test_create_database(self):
 
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
@@ -63,13 +63,13 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertEqual(update_hahmon.create_database(test_DB_name), 1,
                         "call create_database(), exists")
 
-        pathlib.Path.unlink(dp_path)
-        pathlib.Path.mkdir(dp_path)
+        pathlib.Path.unlink(db_path)
+        pathlib.Path.mkdir(db_path)
 
         self.assertEqual(update_hahmon.create_database(test_DB_name), 2,
                         "call create_database(), exists")
         
-        pathlib.Path.rmdir(dp_path)
+        pathlib.Path.rmdir(db_path)
 
     def test_insert_host(self):
         self.assertEqual(update_hahmon.create_database(test_DB_name), 0,
@@ -181,7 +181,21 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,350)
         self.validate_record("oak",timestamp_before,3000, "/some/topic")
 
+        # comment next line to allow manual examination of database
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
+    def test_update_host_activity(self):
+        update_hahmon.create_database(test_DB_name)
+        update_hahmon.insert_host(test_DB_name, "oak", 300)
+        update_hahmon.insert_host(test_DB_name, "oak", 500, "/some/topic")
+
+        update_hahmon.update_host_activity(test_DB_name,
+                "home_automation/brandywine/roamer/outside_temp_humidity \
+                1536080280, 92.36, 58.06")
+
+        # comment next line to allow manual examination of database
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+    
 
 if __name__ == "__main__": 
     unittest.main()
