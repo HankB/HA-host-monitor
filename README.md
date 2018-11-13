@@ -18,10 +18,26 @@ and an exception reported for any overdue hosts.
 1) Process to scan the database and look for overdue hosts.
 1) Test script to test portions of the various other components.
 
+## Files
+
+(It's a pain to come back after several months and not be able to figure out where I was.)
+
+```test
+edit_hahmon.py          create and update database.
+hahmon.py               placeholder for the 'main'
+test_edit_hahmon.py     unit tests for edit_hahmon.py
+update_hahmon.py        ? holds presently unused code?
+```
+
 ## Status
 
-Working on the process to create and add/remove hosts in the database. (TDD - 
-one test coded.)
+Working on the process to create and add/remove hosts in the database. (TDD - one test coded.)
+
+## Testing
+
+```bash
+./test_edit_hahmon.py
+```
 
 ## Environment
 
