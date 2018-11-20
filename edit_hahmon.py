@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Create (if needed) and update host records for the home automation host 
+Create (if needed) and update host records for the home automation host
 monitor. In other words, manage the database that the monitor works from.
 
 Usage:
@@ -27,9 +27,11 @@ import atexit
 import os
 import time
 
+
 def close_connection(some_con):
     some_con.commit()
     some_con.close()
+
 
 def open_database(db_name):
     try:
@@ -50,7 +52,7 @@ def create_database(db_name):
 
         st = c.execute('''CREATE TABLE host_activity
                 (
-                host        TEXT, 
+                host        TEXT,
                 topic       TEXT,
                 timestamp   INTEGER,
                 timeout     INTEGER,
@@ -61,21 +63,23 @@ def create_database(db_name):
 
     return 0
 
-def host_match(cursor, name, topic):
-    """ Check for matches with supplied values 
+
+def host_match(cursor, name, topic=None):
+    """ Check for matches with supplied values
     0 - no matches
     -1 - error
     n - number of matching rows (should be only 1)"""
     try:
         if topic is None:
-            records = cursor.execute('''select count(*) from host_activity 
+            records = cursor.execute('''select count(*) from host_activity
                 where host=? and topic is NULL''', (name,))
         else:
-            records = cursor.execute('''select count(*) from host_activity 
-                where host=? and topic=?''', (name,topic,))
+            records = cursor.execute('''select count(*) from host_activity
+                where host=? and topic=?''', (name, topic,))
         return records.fetchone()[0]
     except:
         return -1
+
 
 def insert_host(db_name, name, timeout, topic=None):
     """ Add a host to the database. Return an appropriate status:
@@ -91,7 +95,8 @@ def insert_host(db_name, name, timeout, topic=None):
         c = conn.cursor()
         match_result = host_match(c, name, topic)
         if match_result == 0:
-            c.execute('''insert into host_activity values(?,?,?,?,?)''', (name, topic, int(time.time()), timeout, "unknown", ))
+            c.execute('''insert into host_activity values(?,?,?,?,?)''', (
+                name, topic, int(time.time()), timeout, "unknown", ))
             conn.commit()
             rc = 0
         elif match_result == -1:
@@ -103,6 +108,7 @@ def insert_host(db_name, name, timeout, topic=None):
 
     c.close()
     return rc
+
 
 def update_host_timeout(db_name, name, timeout, topic=None):
     """ Update timeout setting for a host/topic in the database.
@@ -140,6 +146,7 @@ def update_host_timeout(db_name, name, timeout, topic=None):
 
     return rc
 
+
 def list_unimplemented(db_name, name="%", topic=None):
     """ Create a text list of '\n' seperated records representing
     hosts and their respective records.
@@ -154,15 +161,14 @@ def list_unimplemented(db_name, name="%", topic=None):
     try:
         c = conn.cursor()
         if topic is None:
-            records = cursor.execute('''select * from host_activity 
+            records = cursor.execute('''select * from host_activity
                 where host like ? ''', (name,))
         else:
-            records = cursor.execute('''select count(*) from host_activity 
-                where host like ? and topic like ?''', (name,topic,))
+            records = cursor.execute('''select count(*) from host_activity
+                where host like ? and topic like ?''', (name, topic,))
     except:
         return -1
     finally:
         c.close()
 
     return rc
-
