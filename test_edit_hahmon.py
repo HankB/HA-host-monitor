@@ -11,6 +11,7 @@ import pathlib
 import os
 import time
 import subprocess
+import sqlite3
 
 def unittest_verbosity():
     """Return the verbosity setting of the currently running unittest
@@ -70,6 +71,40 @@ class UpdateHAmonTest(unittest.TestCase):
                         "call create_database(), exists")
         
         pathlib.Path.rmdir(db_path)
+
+
+    def test_host_match(self):
+        self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
+                        "call create_database()")
+
+        hosts = [
+            ("oak", None),
+            ("oak", "/some/topic"),
+            ("oak", "/another/topic"),
+            ("oak", "/duplicate/topic"),
+            ("oak", "/duplicate/topic"),
+            ("maple", None),
+            ("maple", "/some/topic"),
+            ("maple", "/another/topic"),
+        ]
+
+        try:
+            conn = sqlite3.connect(test_DB_name)
+        except:
+            self.assertTrue(False, "Cannot connect to DB")
+
+        conn.executemany("insert into host_activity(host, topic) values (?,?)", hosts)
+        conn.commit()
+        c = conn.cursor()
+
+        self.assertEqual(edit_hahmon.host_match(c, "oak"), 1, "match host w/out topic")
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "no/topic"), 0, "match host w/unmatched topic")
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "/some/topic"), 1, "match host w/ topic")
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "/duplicate/topic"), 2, "match host w/duplicate topic") # pathological
+
+        # comment next line to allow manual examination of database
+        edit_hahmon.close_connection(conn)
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
     def test_insert_host(self):
         self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
@@ -182,7 +217,7 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,3000, "/some/topic")
 
         # comment next line to allow manual examination of database
-        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+        # pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
     
 
