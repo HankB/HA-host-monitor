@@ -43,7 +43,6 @@ class UpdateHAmonTest(unittest.TestCase):
         if topic == None:
             select='"select * from host_activity ' + \
                         'where host=\''+name+'\' and topic is NULL"'
-                        
         else:
             select='"select * from host_activity '+ \
                         'where host=\''+name+'\' and topic=\''+topic+'\'"'
@@ -53,9 +52,11 @@ class UpdateHAmonTest(unittest.TestCase):
         if topic == None:
             topic=""
 
-        self.assertTrue((db_content == name+'|'+topic+'|'+str(timestamp)+'|'+str(timeout)+'|unknown\n') or
-                        (db_content == name+'|'+topic+'|'+str(timestamp+1)+'|'+str(timeout)+'|unknown\n' ))
-    
+        self.assertTrue((db_content == name+'|'+topic+'|'+str(timestamp)+'|'
+                        +str(timeout)+'|unknown\n') or
+                        (db_content == name+'|'+topic+'|'+str(timestamp+1)+'|'
+                        +str(timeout)+'|unknown\n' ))
+
     def test_create_database(self):
 
         self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
@@ -69,7 +70,7 @@ class UpdateHAmonTest(unittest.TestCase):
 
         self.assertEqual(edit_hahmon.create_database(test_DB_name), 2,
                         "call create_database(), exists")
-        
+
         pathlib.Path.rmdir(db_path)
 
 
@@ -98,9 +99,12 @@ class UpdateHAmonTest(unittest.TestCase):
         c = conn.cursor()
 
         self.assertEqual(edit_hahmon.host_match(c, "oak"), 1, "match host w/out topic")
-        self.assertEqual(edit_hahmon.host_match(c, "oak", "no/topic"), 0, "match host w/unmatched topic")
-        self.assertEqual(edit_hahmon.host_match(c, "oak", "/some/topic"), 1, "match host w/ topic")
-        self.assertEqual(edit_hahmon.host_match(c, "oak", "/duplicate/topic"), 2, "match host w/duplicate topic") # pathological
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "no/topic"), 0,
+                        "match host w/unmatched topic")
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "/some/topic"),
+                        1, "match host w/ topic")
+        self.assertEqual(edit_hahmon.host_match(c, "oak", "/duplicate/topic"),
+                        2, "match host w/duplicate topic") # pathological
 
         # comment next line to allow manual examination of database
         edit_hahmon.close_connection(conn)
@@ -120,7 +124,8 @@ class UpdateHAmonTest(unittest.TestCase):
             db_content= db_read.read()
 
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"),
+                        "DB content match" )
 
         # repeat insert should be rejected. DB contents should remain the same
         self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60), 1,
@@ -130,7 +135,8 @@ class UpdateHAmonTest(unittest.TestCase):
             db_content= db_read.read()
 
         self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"),
+                        "DB content match" )
 
         # test insert with a different host
         timestamp_before = str(int(time.time()))
@@ -143,7 +149,8 @@ class UpdateHAmonTest(unittest.TestCase):
             db_content= db_read.read()
 
         self.assertTrue((db_content == "olive||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "olive||"+timestamp_after+"|3600|unknown\n"), "DB content match" )
+                        (db_content == "olive||"+timestamp_after+"|3600|unknown\n"),
+                        "DB content match" )
 
 
         # Test insert with topic
@@ -192,10 +199,12 @@ class UpdateHAmonTest(unittest.TestCase):
         timestamp_before = int(time.time())
         self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 300), 0,
                         "call insert_host()")
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 500, "/some/topic"), 0,
+        self.assertEqual(edit_hahmon.insert_host(test_DB_name,
+                        "oak", 500, "/some/topic"), 0,
                         "call insert_host()")
         timestamp_after = int(time.time())
-        self.assertTrue(timestamp_after-timestamp_before <= 1, "test error: process took too long")
+        self.assertTrue(timestamp_after-timestamp_before <= 1,
+                        "test error: process took too long")
 
         # Validate first and second record inserted
         self.validate_record("oak",timestamp_before,300)
@@ -209,7 +218,8 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,350)
         self.validate_record("oak",timestamp_before,500, "/some/topic")
 
-        self.assertEqual(edit_hahmon.update_host_timeout(test_DB_name, "oak", 3000, "/some/topic"), 0,
+        self.assertEqual(edit_hahmon.update_host_timeout(test_DB_name,
+                        "oak", 3000, "/some/topic"), 0,
                         "call update_host()")
 
         # Validate first and second record inserted
@@ -217,9 +227,9 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak",timestamp_before,3000, "/some/topic")
 
         # comment next line to allow manual examination of database
-        # pathlib.Path.unlink(pathlib.Path(test_DB_name))
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
-    
 
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     unittest.main()
