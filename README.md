@@ -1,6 +1,9 @@
 # HA-host-monitor
 
-Monitor hosts to detect when one drops out.
+(Home Automation host monitor)
+
+Monitor hosts that publish to an MQTT server to detect when one drops out.
+(It will be useful to understand MQTT and related terminology.)
 
 ## Strategy
 
@@ -16,7 +19,7 @@ and an exception reported for any overdue hosts.
 1) Process to create and edit database entries.
 1) Process to handle incoming MQTT messages and update the database.
 1) Process to scan the database and look for overdue hosts.
-1) Test script to test portions of the various other components.
+1) Test script(s) to test portions of the various other components.
 
 ## Files
 
