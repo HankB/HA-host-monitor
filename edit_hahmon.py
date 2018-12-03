@@ -5,10 +5,13 @@ Create (if needed) and update host records for the home automation host
 monitor. In other words, manage the database that the monitor works from.
 
 Usage:
-    update_hahmon.py -a <hostname> [<topic>]    # add host to database
-    update_hahmon.py -d <hostname> [<topic>]    # remove host from database
-    update_hahmon.py -l [<hostname>]            # report status of listed host
-    or all hosts in database
+    edit_hahmon.py -c                           # create database if doesn't exist
+    edit_hahmon.py -a <hostname> [<topic>]      # add host to database
+    edit_hahmon.py -d <hostname> [<topic>]      # remove host from database
+    edit_hahmon.py -l [<hostname>]              # report status of listed host
+                                                # or all hosts in database
+
+    (see parse_args() for expanded argument names.)
 
 To destroy the database simply delete the database file.
 
@@ -26,6 +29,7 @@ import sqlite3
 import atexit
 import os
 import time
+from argparse import ArgumentParser
 
 
 def close_connection(some_con):
@@ -151,7 +155,7 @@ def list_unimplemented(db_name, name="%", topic=None):
     """ Create a text list of '\n' seperated records representing
     hosts and their respective records.
     TODO: For now return all rows. For my application that will meet needs.
-    For that matter, an sqlite command would do.
+    For that matter, an sqlite3 command would do.
         sqlite3 db_name 'select * from host_activity;'
     """
     conn = open_database(db_name)
@@ -172,3 +176,35 @@ def list_unimplemented(db_name, name="%", topic=None):
         c.close()
 
     return rc
+
+test_DB_name = "hahmon.db"
+
+def parse_args(args):
+    ''' Parse command line arguments in a testable fashion
+    '''
+    parser = ArgumentParser()
+    parser.add_argument("-c", "--create",
+                        action="store_true", dest="create", default=False,
+                        help="create empty database")
+    parser.add_argument("-a", "--add",
+                        dest="host", nargs='+',
+                        help="add <hostname> [<topic>]")
+    parser.add_argument("-d", "--delete",
+                        dest="host", nargs='+',
+                        help="delete <hostname> [<topic>]")
+    parser.add_argument("-l", "--list",
+                        dest="host", nargs='?',
+                        help="list [<hostname>]")
+    return parser.parse_args()
+
+
+def edit_hahmon_main():
+    from sys import argv
+    args = parse_args(argv[1:])
+
+    print("args", args)
+
+    print("main called\n")
+
+if __name__ == "__main__":
+    edit_hahmon_main()
