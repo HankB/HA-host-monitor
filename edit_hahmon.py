@@ -195,7 +195,7 @@ def parse_args(args):
     parser.add_argument("-l", "--list",
                         dest="host", nargs='?',
                         help="list [<hostname>]")
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
 def edit_hahmon_main():
