@@ -229,6 +229,10 @@ class UpdateHAmonTest(unittest.TestCase):
         # comment next line to allow manual examination of database
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
+    def test_parse_args(self):
+
+        with self.assertRaises(SystemExit):
+            edit_hahmon.parse_args(['-x', '-x'])
 
 
 if __name__ == "__main__":
