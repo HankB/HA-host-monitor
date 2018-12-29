@@ -234,6 +234,5 @@ class UpdateHAmonTest(unittest.TestCase):
         with self.assertRaises(SystemExit, "invalid argument"):
             edit_hahmon.parse_args(['-x'])
 
-
 if __name__ == "__main__":
     unittest.main()
