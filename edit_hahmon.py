@@ -179,22 +179,25 @@ def list_unimplemented(db_name, name="%", topic=None):
 
 test_DB_name = "hahmon.db"
 
+
 def parse_args(args):
     ''' Parse command line arguments in a testable fashion
     '''
+
     parser = ArgumentParser()
-    parser.add_argument("-c", "--create",
-                        action="store_true", dest="create", default=False,
-                        help="create empty database")
-    parser.add_argument("-a", "--add",
-                        dest="host", nargs='+',
-                        help="add <hostname> [<topic>]")
-    parser.add_argument("-d", "--delete",
-                        dest="host", nargs='+',
-                        help="delete <hostname> [<topic>]")
-    parser.add_argument("-l", "--list",
-                        dest="host", nargs='?',
-                        help="list [<hostname>]")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-c", "--create",
+                       action="store_true", dest="create", default=False,
+                       help="create empty database")
+    group.add_argument("-a", "--add",
+                       dest="addhost", nargs='+',
+                       help="add <hostname> [<topic>]")
+    group.add_argument("-d", "--delete",
+                       dest="delhost", nargs='+',
+                       help="delete <hostname> [<topic>]")
+    group.add_argument("-l", "--list",
+                       dest="listhost", nargs='?', default="",
+                       help="list [<hostname>]")
     return parser.parse_args(args)
 
 
