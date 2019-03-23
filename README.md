@@ -16,10 +16,10 @@ and an exception reported for any overdue hosts.
 
 ## Components
 
-1) Process to create and edit database entries.
-1) Process to handle incoming MQTT messages and update the database.
-1) Process to scan the database and look for overdue hosts.
-1) Test script(s) to test portions of the various other components.
+1. Process to create and edit database entries.
+1. Process to handle incoming MQTT messages and update the database.
+1. Process to scan the database and look for overdue hosts.
+1. Test script(s) to test portions of the various other components.
 
 ## Files
 
