@@ -198,7 +198,14 @@ def parse_args(args):
     group.add_argument("-l", "--list",
                        dest="listhost", nargs='?', default="",
                        help="list [<hostname>]")
-    return parser.parse_args(args)
+
+    parsed_args = parser.parse_args(args)
+
+    # manual validation of arg count for --add
+    if (parsed_args.addhost is not None) and (len(parsed_args.addhost) > 2):
+        parser.error('[-a|--addhost] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.addhost)))
+
+    return parsed_args
 
 
 def edit_hahmon_main():
