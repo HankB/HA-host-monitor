@@ -40,6 +40,8 @@ Working on the process to create and add/remove hosts in the database. (TDD - on
 
 ```bash
 ./test_edit_hahmon.py
+./test_edit_hahmon.py UpdateHAmonTest.test_create_database
+./test_edit_hahmon.py UpdateHAmonTest.test_parse_args 2>/dev/null
 ```
 
 ## Environment
