@@ -205,6 +205,10 @@ def parse_args(args):
     if (parsed_args.addhost is not None) and (len(parsed_args.addhost) > 2):
         parser.error('[-a|--addhost] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.addhost)))
 
+    # manual validation of arg count for --delete
+    if (parsed_args.delhost is not None) and (len(parsed_args.delhost) > 2):
+        parser.error('[-a|--delete] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.delhost)))
+
     return parsed_args
 
 
