@@ -177,6 +177,7 @@ def list_unimplemented(db_name, name="%", topic=None):
 
     return rc
 
+
 test_DB_name = "hahmon.db"
 
 
@@ -203,11 +204,13 @@ def parse_args(args):
 
     # manual validation of arg count for --add
     if (parsed_args.addhost is not None) and (len(parsed_args.addhost) > 2):
-        parser.error('[-a|--addhost] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.addhost)))
+        parser.error(
+            '[-a|--addhost] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.addhost)))
 
     # manual validation of arg count for --delete
     if (parsed_args.delhost is not None) and (len(parsed_args.delhost) > 2):
-        parser.error('[-a|--delete] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.delhost)))
+        parser.error(
+            '[-a|--delete] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.delhost)))
 
     return parsed_args
 
@@ -219,6 +222,7 @@ def edit_hahmon_main():
     print("args", args)
 
     print("main called\n")
+
 
 if __name__ == "__main__":
     edit_hahmon_main()
