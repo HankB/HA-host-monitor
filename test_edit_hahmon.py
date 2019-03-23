@@ -278,9 +278,28 @@ class UpdateHAmonTest(unittest.TestCase):
                 msg="exit on superfluous arg ['-a', 'somehost', 'sometopic', 'superfluous']"):
             edit_hahmon.parse_args(['-a', 'somehost', 'sometopic', 'superfluous'])
 
+        # test 'delete' arguments
+        with self.assertRaises(SystemExit, msg="didn't exit on [-d]"):
+            edit_hahmon.parse_args(['-d'])
+
+        args = edit_hahmon.parse_args(['-d', 'somehost'])
+        self.assertEqual(args.delhost[0], "somehost", "didn't return 'somehost'")
+        self.assertTrue( args.create == False and args.addhost == None
+            and args.listhost == '', "Returned wrong defaults ['-d', 'somehost']")
+
+        args = edit_hahmon.parse_args(['-d', 'somehost', 'sometopic'])
+        self.assertEqual(args.delhost[0], "somehost", "didn't return 'somehost'")
+        self.assertEqual(args.delhost[1], "sometopic", "didn't return 'sometopic'")
+        self.assertTrue( args.create == False and args.addhost == None
+            and args.listhost == '', "Returned wrong defaults ['-d', 'somehost', 'sometopic']")
+
+        with self.assertRaises(SystemExit,
+                msg="exit on superfluous arg ['-d', 'somehost', 'sometopic', 'superfluous']"):
+            edit_hahmon.parse_args(['-d', 'somehost', 'sometopic', 'superfluous'])
+
         '''
         args = edit_hahmon.parse_args(['-a', 'somehost', 'sometopic', 'superfluous'])
-        self.assertEqual(args.addhost[0], "somehost", "didn't return 'somehost'")
+        self.assertEqual(args.delhost[0], "somehost", "didn't return 'somehost'")
         self.assertEqual(args.addhost[1], "sometopic", "didn't return 'sometopic'")
         self.assertEqual(args.addhost[2], "superfluous", "didn't return 'superfluous'")
         self.assertTrue( args.create == False and args.delhost == None
