@@ -307,9 +307,13 @@ class UpdateHAmonTest(unittest.TestCase):
             edit_hahmon.parse_args(
                 ['-d', 'somehost', 'sometopic', 'superfluous'])
 
+        # test --list arg processing
+        # non-intuitively "nargs='?'" returns None for '-l'
+        args = edit_hahmon.parse_args(['-l'])
+        self.assertEqual(args.listhost, None, "['-l'] didn't return None")
+        args = edit_hahmon.parse_args(['-l', 'somehost'])
+        self.assertEqual(args.listhost, "somehost", "['-l', 'somehost'] didn't return 'somehost'")
         '''
-        args = edit_hahmon.parse_args(['-a', 'somehost', 'sometopic', 'superfluous'])
-        self.assertEqual(args.delhost[0], "somehost", "didn't return 'somehost'")
         self.assertEqual(args.addhost[1], "sometopic", "didn't return 'sometopic'")
         self.assertEqual(args.addhost[2], "superfluous", "didn't return 'superfluous'")
         self.assertTrue( args.create == False and args.delhost == None
