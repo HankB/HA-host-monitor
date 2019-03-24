@@ -312,7 +312,8 @@ class UpdateHAmonTest(unittest.TestCase):
         args = edit_hahmon.parse_args(['-l'])
         self.assertEqual(args.listhost, None, "['-l'] didn't return None")
         args = edit_hahmon.parse_args(['-l', 'somehost'])
-        self.assertEqual(args.listhost, "somehost", "['-l', 'somehost'] didn't return 'somehost'")
+        self.assertEqual(args.listhost, "somehost",
+                         "['-l', 'somehost'] didn't return 'somehost'")
         '''
         self.assertEqual(args.addhost[1], "sometopic", "didn't return 'sometopic'")
         self.assertEqual(args.addhost[2], "superfluous", "didn't return 'superfluous'")
