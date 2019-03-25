@@ -45,20 +45,20 @@ class UpdateHAmonTest(unittest.TestCase):
         """ Read record from DB matching key and topic and validate contents' """
         if topic == None:
             select = '"select * from host_activity ' + \
-                'where host=\''+name+'\' and topic is NULL"'
+                'where host=\'' + name + '\' and topic is NULL"'
         else:
             select = '"select * from host_activity ' + \
-                'where host=\''+name+'\' and topic=\''+topic+'\'"'
-        with os.popen('sqlite3 ha_test.db '+select) as db_read:
+                'where host=\'' + name + '\' and topic=\'' + topic + '\'"'
+        with os.popen('sqlite3 ha_test.db ' + select) as db_read:
             db_content = db_read.read()
 
         if topic == None:
             topic = ""
 
-        self.assertTrue((db_content == name+'|'+topic+'|'+str(timestamp)+'|'
-                         + str(timeout)+'|unknown\n') or
-                        (db_content == name+'|'+topic+'|'+str(timestamp+1)+'|'
-                         + str(timeout)+'|unknown\n'))
+        self.assertTrue((db_content == name + '|' + topic + '|' + str(timestamp) + '|'
+                         + str(timeout) + '|unknown\n') or
+                        (db_content == name + '|' + topic + '|' + str(timestamp + 1) + '|'
+                         + str(timeout) + '|unknown\n'))
 
     def test_create_database(self):
 
@@ -121,30 +121,35 @@ class UpdateHAmonTest(unittest.TestCase):
         # test insert, before and after times prevent race condition in subsequent test
         # Assumes it will not take more than one second to insert a line.
         timestamp_before = str(int(time.time()))
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60), 0,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60), 0,
                          "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "oak||" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "oak||" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
 
         # repeat insert should be rejected. DB contents should remain the same
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60), 1,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60), 1,
                          "call insert_host()")
 
         with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "oak||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak||"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "oak||" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "oak||" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
 
         # test insert with a different host
         timestamp_before = str(int(time.time()))
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "olive", 60*60), 0,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "olive", 60 * 60), 0,
                          "call insert_host()")
         timestamp_after = str(int(time.time()))
 
@@ -152,44 +157,51 @@ class UpdateHAmonTest(unittest.TestCase):
                         where host=\'olive\'"''') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "olive||"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "olive||"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "olive||" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "olive||" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
 
         # Test insert with topic
         timestamp_before = str(int(time.time()))
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60, "x"), 0,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "x"), 0,
                          "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'x\'"''') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "oak|x|"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak|x|"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "oak|x|" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "oak|x|" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
 
         # test duplicate rejection with topic
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60, "x"), 1,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "x"), 1,
                          "call insert_host()")
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'x\'"''') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "oak|x|"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak|x|"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "oak|x|" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "oak|x|" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
         # Test insert with different topic
         timestamp_before = str(int(time.time()))
-        self.assertEqual(edit_hahmon.insert_host(test_DB_name, "oak", 60*60, "y"), 0,
+        self.assertEqual(
+            edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "y"), 0,
                          "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'y\'"''') as db_read:
             db_content = db_read.read()
 
-        self.assertTrue((db_content == "oak|y|"+timestamp_before+"|3600|unknown\n") or
-                        (db_content == "oak|y|"+timestamp_after+"|3600|unknown\n"),
+        self.assertTrue((db_content == "oak|y|" + timestamp_before + "|3600|unknown\n") or
+                        (db_content == "oak|y|" +
+                         timestamp_after + "|3600|unknown\n"),
                         "DB content match")
 
         # comment next line to allow manual examination of database
@@ -205,7 +217,7 @@ class UpdateHAmonTest(unittest.TestCase):
                                                  "oak", 500, "/some/topic"), 0,
                          "call insert_host()")
         timestamp_after = int(time.time())
-        self.assertTrue(timestamp_after-timestamp_before <= 1,
+        self.assertTrue(timestamp_after - timestamp_before <= 1,
                         "test error: process took too long")
 
         # Validate first and second record inserted
@@ -213,7 +225,8 @@ class UpdateHAmonTest(unittest.TestCase):
         self.validate_record("oak", timestamp_before, 500, "/some/topic")
 
         # Update first record
-        self.assertEqual(edit_hahmon.update_host_timeout(test_DB_name, "oak", 350), 0,
+        self.assertEqual(
+            edit_hahmon.update_host_timeout(test_DB_name, "oak", 350), 0,
                          "call update_host()")
 
         # Validate first and second record inserted
@@ -235,9 +248,12 @@ class UpdateHAmonTest(unittest.TestCase):
         import sys
 
         class NullDevice:
+
             def write(self, s):
                 pass
-        sys.stderr = NullDevice()   # suppress output to STDERR generated by successful test
+        sys.stderr = NullDevice()
+                                # suppress output to STDERR generated by
+                                # successful test
 
         # test invalid argument
         with self.assertRaises(SystemExit, msg="exit on [-x]"):
@@ -255,7 +271,8 @@ class UpdateHAmonTest(unittest.TestCase):
 
         # test 'create' arguments
         args = edit_hahmon.parse_args(['-c', 'path/to/db'])
-        self.assertTrue(args.db_name == 'path/to/db', "Returned db_name != 'path/to/db'")
+        self.assertTrue(
+            args.db_name == 'path/to/db', "Returned db_name != 'path/to/db'")
         self.assertTrue(args.addhost == None and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults [-c]")
 
@@ -263,7 +280,8 @@ class UpdateHAmonTest(unittest.TestCase):
             edit_hahmon.parse_args(['-c', 'path/to/db', 'superfluous'])
 
         args = edit_hahmon.parse_args(['--create', 'path/to/database'])
-        self.assertTrue(args.db_name == 'path/to/database', "Returned db_name != 'path/to/database'")
+        self.assertTrue(args.db_name == 'path/to/database',
+                        "Returned db_name != 'path/to/database'")
         self.assertTrue(args.addhost == None and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults [--create]")
 
