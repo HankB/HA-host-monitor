@@ -181,11 +181,21 @@ def list_unimplemented(db_name, name="%", topic=None):
 test_DB_name = "hahmon.db"
 
 
+def usage_msg(name=None):
+    return '''edit_hahmon.py
+    [-c | --create [<path/to/database>]] - create new database
+    [-a | --add <hostname> [[<timeout>] <topic>]] - add host (must include timeout if
+                                                    specifying topic)
+    [-d | --delete <hostname> [<topic>]] - delete matching host and topic
+    [-l | --list [<hostname>]] - list database for all hosts or selected host
+    '''
+
+
 def parse_args(args):
     ''' Parse command line arguments in a testable fashion
     '''
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(usage=usage_msg())
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-c", "--create",
                        dest="db_name", nargs='?',
