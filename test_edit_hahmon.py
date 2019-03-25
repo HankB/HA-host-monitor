@@ -249,15 +249,26 @@ class UpdateHAmonTest(unittest.TestCase):
 
         # test 'create' arguments
         args = edit_hahmon.parse_args(['-c'])
-        self.assertTrue(args.create == True, "Returned create == False")
+        self.assertTrue(args.db_name == None, "Returned db_name != None")
+        self.assertTrue(args.addhost == None and args.delhost == None
+                        and args.listhost == '', "Returned wrong defaults [-c]")
+
+        # test 'create' arguments
+        args = edit_hahmon.parse_args(['-c', 'path/to/db'])
+        self.assertTrue(args.db_name == 'path/to/db', "Returned db_name != 'path/to/db'")
         self.assertTrue(args.addhost == None and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults [-c]")
 
         with self.assertRaises(SystemExit, msg="exit on superfluous arg"):
-            edit_hahmon.parse_args(['-c', 'superfluous'])
+            edit_hahmon.parse_args(['-c', 'path/to/db', 'superfluous'])
+
+        args = edit_hahmon.parse_args(['--create', 'path/to/database'])
+        self.assertTrue(args.db_name == 'path/to/database', "Returned db_name != 'path/to/database'")
+        self.assertTrue(args.addhost == None and args.delhost == None
+                        and args.listhost == '', "Returned wrong defaults [--create]")
 
         args = edit_hahmon.parse_args(['--create'])
-        self.assertTrue(args.create == True, "Returned create == False")
+        self.assertTrue(args.db_name == None, "Returned db_name != None")
         self.assertTrue(args.addhost == None and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults [--create]")
 
@@ -268,7 +279,7 @@ class UpdateHAmonTest(unittest.TestCase):
         args = edit_hahmon.parse_args(['-a', 'somehost'])
         self.assertEqual(args.addhost[0], "somehost",
                          "didn't return 'somehost'")
-        self.assertTrue(args.create == False and args.delhost == None
+        self.assertTrue(args.db_name == '' and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults ['-a', 'somehost']")
 
         args = edit_hahmon.parse_args(['-a', 'somehost', 'sometopic'])
@@ -276,7 +287,7 @@ class UpdateHAmonTest(unittest.TestCase):
                          "didn't return 'somehost'")
         self.assertEqual(args.addhost[1], "sometopic",
                          "didn't return 'sometopic'")
-        self.assertTrue(args.create == False and args.delhost == None
+        self.assertTrue(args.db_name == '' and args.delhost == None
                         and args.listhost == '', "Returned wrong defaults ['-a', 'somehost', 'sometopic']")
 
         with self.assertRaises(SystemExit,
@@ -291,7 +302,7 @@ class UpdateHAmonTest(unittest.TestCase):
         args = edit_hahmon.parse_args(['-d', 'somehost'])
         self.assertEqual(args.delhost[0], "somehost",
                          "didn't return 'somehost'")
-        self.assertTrue(args.create == False and args.addhost == None
+        self.assertTrue(args.db_name == '' and args.addhost == None
                         and args.listhost == '', "Returned wrong defaults ['-d', 'somehost']")
 
         args = edit_hahmon.parse_args(['-d', 'somehost', 'sometopic'])
@@ -299,7 +310,7 @@ class UpdateHAmonTest(unittest.TestCase):
                          "didn't return 'somehost'")
         self.assertEqual(args.delhost[1], "sometopic",
                          "didn't return 'sometopic'")
-        self.assertTrue(args.create == False and args.addhost == None
+        self.assertTrue(args.db_name == '' and args.addhost == None
                         and args.listhost == '', "Returned wrong defaults ['-d', 'somehost', 'sometopic']")
 
         with self.assertRaises(SystemExit,
@@ -317,7 +328,7 @@ class UpdateHAmonTest(unittest.TestCase):
         '''
         self.assertEqual(args.addhost[1], "sometopic", "didn't return 'sometopic'")
         self.assertEqual(args.addhost[2], "superfluous", "didn't return 'superfluous'")
-        self.assertTrue( args.create == False and args.delhost == None
+        self.assertTrue( args.db_name == '' and args.delhost == None
             and args.listhost == '', "Returned wrong defaults ['-a', 'somehost', 'sometopic']")
         '''
 

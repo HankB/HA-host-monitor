@@ -5,7 +5,7 @@ Create (if needed) and update host records for the home automation host
 monitor. In other words, manage the database that the monitor works from.
 
 Usage:
-    edit_hahmon.py -c                           # create database if doesn't exist
+    edit_hahmon.py -c [<path/to/db>]            # create database if doesn't exist
     edit_hahmon.py -a <hostname> [<topic>]      # add host to database
     edit_hahmon.py -d <hostname> [<topic>]      # remove host from database
     edit_hahmon.py -l [<hostname>]              # report status of listed host
@@ -15,7 +15,7 @@ Usage:
 
 To destroy the database simply delete the database file.
 
-Database schema:
+Database schema - one table:
     host        Hostname of publisher.
     topic       MQTT topic if one is specified.
     timeout     Time at which the publisher is presumed to be unresponsive.
@@ -188,7 +188,8 @@ def parse_args(args):
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-c", "--create",
-                       action="store_true", dest="create", default=False,
+                       dest="db_name", nargs='?',
+                       default="",
                        help="create empty database")
     group.add_argument("-a", "--add",
                        dest="addhost", nargs='+',
