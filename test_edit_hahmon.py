@@ -60,6 +60,21 @@ class UpdateHAmonTest(unittest.TestCase):
                         (db_content == name + '|' + topic + '|' + str(timestamp + 1) + '|'
                          + str(timeout) + '|unknown\n'))
 
+    def populate_test_DB(self, dbname, contents):
+        self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
+                         "call create_database()")
+
+        try:
+            conn = sqlite3.connect(test_DB_name)
+        except:
+            self.assertTrue(False, "Cannot connect to DB")
+
+        conn.executemany(
+            "insert into host_activity(host, topic, timestamp, timeout, status) \
+                values (?,?,?,?,?)", contents)
+        conn.commit()
+        edit_hahmon.close_connection(conn)
+
     def test_create_database(self):
 
         self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
