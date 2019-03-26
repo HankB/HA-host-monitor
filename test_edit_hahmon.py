@@ -356,6 +356,37 @@ class UpdateHAmonTest(unittest.TestCase):
                       'maple /some/topic 1553542680 300 unknown', ],
                          "multiple entry DB did not return correct results list_db(db,topic='/some/topic')")
 
+        # test filtering host and topic
+        (status, results) = edit_hahmon.list_db(
+            test_DB_name, 'nohost', '/some/topic')
+        self.assertEqual(status, 0, "non-zero status list_db(db,'nohost')")
+        self.assertEqual(len(results), 0,
+                         "correct result count list_db(db,'nohost')")
+        self.assertEqual(results, [],
+                         "incorrect results list_db(db,'nohost', '/some/topic')")
+
+        (status, results) = edit_hahmon.list_db(
+            test_DB_name, 'oak', '/some/topic')
+        self.assertEqual(
+            status, 0, "non-zero status list_db(db,'oak', '/some/topic')")
+        self.assertEqual(len(results), 1,
+                         "correct result count list_db(db,'oak', '/some/topic')")
+        self.assertEqual(results, ['oak /some/topic 1553542680 300 unknown', ],
+                         "incorrect results list_db(db,'oak', '/some/topic')")
+
+        (status, results) = edit_hahmon.list_db(
+            test_DB_name, 'maple', '/some/topic')
+        self.assertEqual(
+            status, 0, "non-zero status list_db(db,'maple', '/some/topic')")
+        self.assertEqual(len(results), 1,
+                         "correct result count list_db(db,'maple', '/some/topic')")
+        self.assertEqual(
+            results, ['maple /some/topic 1553542680 300 unknown', ],
+                         "incorrect results list_db(db,'maple', '/some/topic')")
+
+        # TODO: Errata: Present logic does not support searching for host(s) with no topic.
+        # unspecified topic is treated like a wild card.
+
         # comment next line to allow manual examination of database
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
