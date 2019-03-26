@@ -223,6 +223,8 @@ class UpdateHAmonTest(unittest.TestCase):
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
     def test_update_host_timeout(self):
+        if os.path.isfile(test_DB_name):
+            pathlib.Path.unlink(pathlib.Path(test_DB_name))
         self.assertEqual(edit_hahmon.create_database(test_DB_name), 0,
                          "call create_database()")
         timestamp_before = int(time.time())
