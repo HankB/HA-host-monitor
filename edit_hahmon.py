@@ -263,6 +263,17 @@ def edit_hahmon_main():
             print('e.g. \'export  DB_NAME_ENV=path/to/database\'')
             exit(1)
 
+        print("DB is ", hamon_db)
+        if args.addhost is not None:  # Add a host/timeout/topic
+                                        # oops - no way to add timeout
+            topic = None
+            if len(args.addhost) == 2:
+                topic = args.addhost[1]
+            rc = insert_host(hamon_db, args.addhost[0], 300, topic)
+            if rc != 0:
+                print(
+                    "Insert '%s' '%s' not successful:%d" % (args.addhost[0], topic, rc))
+                exit(rc)
 
 if __name__ == "__main__":
     edit_hahmon_main()
