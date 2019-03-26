@@ -170,7 +170,7 @@ def list_db(db_name, name="%", topic=None):
             records = c.execute('''select * from host_activity
                 where host like ? ''', (name,))
         else:
-            records = c.execute('''select count(*) from host_activity
+            records = c.execute('''select * from host_activity
                 where host like ? and topic like ?''', (name, topic,))
         result_array = []
         result_format = "{} {} {} {} {}"
