@@ -280,7 +280,7 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertEqual(status, 0, "non-zero status list_db()")
         self.assertEqual(
             results, ['oak None 1553542680 300 unknown'],
-            "single entry DB did not return correct results ist_db()")
+            "single entry DB did not return correct results list_db()")
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
         hosts = [
@@ -301,12 +301,60 @@ class UpdateHAmonTest(unittest.TestCase):
                       'maple None 1553542680 300 unknown',
                       'maple /some/topic 1553542680 300 unknown',
                       ],
-            "multiple entry DB did not return correct results ist_db()")
+            "multiple entry DB did not return correct results list_db()")
 
         ''' uncomment to view list results
         for row in results:
             print(row)
         '''
+        # test filtering for list, first on hostname
+        (status, results) = edit_hahmon.list_db(test_DB_name, 'nohost')
+        self.assertEqual(status, 0, "non-zero status list_db(db,'nohost')")
+        self.assertEqual(len(results), 0,
+                         "correct result count list_db(db,'nohost')")
+        self.assertEqual(results, [],
+                         "multiple entry DB did not return correct results list_db(db,'nohost')")
+
+        (status, results) = edit_hahmon.list_db(test_DB_name, 'oak')
+        self.assertEqual(status, 0, "non-zero status list_db(db,'oak')")
+        self.assertEqual(len(results), 3,
+                         "correct result count list_db(db,'oak')")
+        self.assertEqual(
+            results, ['oak None 1553542680 300 unknown',
+                      'oak /some/topic 1553542680 300 unknown',
+                      'oak /someother/topic 1553542680 300 unknown',
+                      ],
+            "multiple entry DB did not return correct results list_db(db,'oak')")
+
+        # test filtering for list, topic alone
+        (status, results) = edit_hahmon.list_db(test_DB_name, topic='notopic')
+        self.assertEqual(
+            status, 0, "non-zero status list_db(db,topic='notopic')")
+        self.assertEqual(len(results), 0,
+                         "correct result count list_db(db,topic='notopic')")
+        self.assertEqual(results, [],
+                         "multiple entry DB did not return correct results list_db(db,topic='notopic')")
+
+        (status, results) = edit_hahmon.list_db(
+            test_DB_name, topic='/someother/topic')
+        self.assertEqual(
+            status, 0, "non-zero status list_db(db,topic='/someother/topic')")
+        self.assertEqual(len(results), 1,
+                         "correct result count list_db(db,topic='/someother/topic')")
+        self.assertEqual(
+            results, ['oak /someother/topic 1553542680 300 unknown'],
+                         "multiple entry DB did not return correct results list_db(db,topic='/someother/topic')")
+
+        (status, results) = edit_hahmon.list_db(
+            test_DB_name, topic='/some/topic')
+        self.assertEqual(
+            status, 0, "non-zero status list_db(db,topic='/some/topic')")
+        self.assertEqual(len(results), 2,
+                         "correct result count list_db(db,topic='/some/topic')")
+        self.assertEqual(
+            results, ['oak /some/topic 1553542680 300 unknown',
+                      'maple /some/topic 1553542680 300 unknown', ],
+                         "multiple entry DB did not return correct results list_db(db,topic='/some/topic')")
 
         # comment next line to allow manual examination of database
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
