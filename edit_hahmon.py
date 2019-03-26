@@ -245,6 +245,7 @@ def edit_hahmon_main():
     args = parse_args(argv[1:])
 
     print("args", args)
+    print(os.environ.get('HAMON_DB'))
 
     DB_NAME_ENV = 'DB_NAME_ENV'
 
@@ -274,6 +275,13 @@ def edit_hahmon_main():
                 print(
                     "Insert '%s' '%s' not successful:%d" % (args.addhost[0], topic, rc))
                 exit(rc)
+        elif args.delhost is not None:  # delete a host
+            topic = None
+            if len(args.delhost) == 2:
+                topic = args.delhost[1]
+            print("Oops - no way to delte a host!")
+            exit(1)
+
 
 if __name__ == "__main__":
     edit_hahmon_main()
