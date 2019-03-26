@@ -243,7 +243,6 @@ def parse_args(args):
 def edit_hahmon_main():
     from sys import argv
     args = parse_args(argv[1:])
-
     print("args", args)
     print(os.environ.get('HAMON_DB'))
 
