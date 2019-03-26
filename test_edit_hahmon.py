@@ -261,6 +261,56 @@ class UpdateHAmonTest(unittest.TestCase):
         # comment next line to allow manual examination of database
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
+    def test_list(self):
+        # create/populate database
+
+        hosts = []  # empty DB
+        self.populate_test_DB(test_DB_name, hosts)
+        (status, results) = edit_hahmon.list_db(test_DB_name)
+        self.assertEqual(status, 0, "non-zero status list_db()")
+        self.assertEqual(results, [],
+                         "empty DB did not return empty results list_db()")
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+        hosts = [   # single entry in DB
+            ("oak", None,               1553542680, 300, 'unknown'),
+        ]
+        self.populate_test_DB(test_DB_name, hosts)
+        (status, results) = edit_hahmon.list_db(test_DB_name)
+        self.assertEqual(status, 0, "non-zero status list_db()")
+        self.assertEqual(
+            results, ['oak None 1553542680 300 unknown'],
+            "single entry DB did not return correct results ist_db()")
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+        hosts = [
+            ("oak", None,               1553542680, 300, 'unknown'),
+            ("oak", "/some/topic",      1553542680, 300, 'unknown'),
+            ("oak", "/someother/topic", 1553542680, 300, 'unknown'),
+            ("maple", None,             1553542680, 300, 'unknown'),
+            ("maple", "/some/topic",    1553542680, 300, 'unknown'),
+        ]
+        self.populate_test_DB(test_DB_name, hosts)
+        (status, results) = edit_hahmon.list_db(test_DB_name)
+        self.assertEqual(status, 0, "non-zero status list_db()")
+        self.assertEqual(len(results), 5, "correct result count list_db()")
+        self.assertEqual(
+            results, ['oak None 1553542680 300 unknown',
+                      'oak /some/topic 1553542680 300 unknown',
+                      'oak /someother/topic 1553542680 300 unknown',
+                      'maple None 1553542680 300 unknown',
+                      'maple /some/topic 1553542680 300 unknown',
+                      ],
+            "multiple entry DB did not return correct results ist_db()")
+
+        ''' uncomment to view list results
+        for row in results:
+            print(row)
+        '''
+
+        # comment next line to allow manual examination of database
+        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
     def test_parse_args(self):
         import sys
 
