@@ -246,7 +246,22 @@ def edit_hahmon_main():
 
     print("args", args)
 
-    print("main called\n")
+    DB_NAME_ENV = 'DB_NAME_ENV'
+
+    if args.db_name != "":      # create new DB?
+        hamon_db = "hamon.db"  # default database name
+        if args.db_name != None:
+            hamon_db = args.db_name
+        rc = create_database(hamon_db)
+        if rc != 0:
+            print("could not create database: return code:", rc)
+        exit(rc)
+    else:
+        hamon_db = os.environ.get(DB_NAME_ENV)
+        if hamon_db is None:
+            print('Please specify the database location')
+            print('e.g. \'export  DB_NAME_ENV=path/to/database\'')
+            exit(1)
 
 
 if __name__ == "__main__":
