@@ -5,11 +5,11 @@ Create (if needed) and update host records for the home automation host
 monitor. In other words, manage the database that the monitor works from.
 
 Usage:
-    edit_hahmon.py -c [<path/to/db>]            # create database if doesn't exist
-    edit_hahmon.py -a <hostname> [<topic>]      # add host to database
-    edit_hahmon.py -d <hostname> [<topic>]      # remove host from database
-    edit_hahmon.py -l [<hostname>]              # report status of listed host
-                                                # or all hosts in database
+    edit_hahmon.py -c [<path/to/db>]                    # create database if doesn't exist
+    edit_hahmon.py -a <hostname> [<timeout>[<topic>]]   # add host to database
+    edit_hahmon.py -d <hostname> [<topic>]              # remove host from database
+    edit_hahmon.py -l [<hostname>]                      # report status of listed host
+                                                        python3 # or all hosts in database
 
     (see parse_args() for expanded argument names.)
 
