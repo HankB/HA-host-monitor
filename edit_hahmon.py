@@ -157,6 +157,9 @@ def list_db(db_name, name="%", topic=None):
     TODO: For now return all rows. For my application that will meet needs.
     For that matter, an sqlite3 command would do.
         sqlite3 db_name 'select * from host_activity;'
+
+    NB: Not possible to search for records with NULL topics
+        as 'topic=None' interprets as 'any'
     """
 
     conn = open_database(db_name)
