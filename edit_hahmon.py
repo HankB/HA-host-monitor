@@ -151,29 +151,37 @@ def update_host_timeout(db_name, name, timeout, topic=None):
     return rc
 
 
-def list_unimplemented(db_name, name="%", topic=None):
+def list_db(db_name, name="%", topic=None):
     """ Create a text list of '\n' seperated records representing
     hosts and their respective records.
     TODO: For now return all rows. For my application that will meet needs.
     For that matter, an sqlite3 command would do.
         sqlite3 db_name 'select * from host_activity;'
     """
+
     conn = open_database(db_name)
     if conn == None:
         return (2, "")
 
+    rc = (0, "")    # initialize return value
     try:
         c = conn.cursor()
         if topic is None:
-            records = cursor.execute('''select * from host_activity
+            records = c.execute('''select * from host_activity
                 where host like ? ''', (name,))
         else:
-            records = cursor.execute('''select count(*) from host_activity
+            records = c.execute('''select count(*) from host_activity
                 where host like ? and topic like ?''', (name, topic,))
+        result_array = []
+        result_format = "{} {} {} {} {}"
+        for rows in records:    # format and add rows to return value
+            result_array.append(result_format.format(*rows))
+        rc = (0, result_array)
     except:
-        return -1
+        return (-1, "")
     finally:
         c.close()
+        close_connection(conn)
 
     return rc
 
