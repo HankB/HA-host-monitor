@@ -169,6 +169,9 @@ def list_db(db_name, name="%", topic=None):
         if topic is None:
             records = c.execute('''select * from host_activity
                 where host like ? ''', (name,))
+        elif topic is not None and name is None:
+            records = c.execute('''select * from host_activity
+                where  topic like ?''', (topic,))
         else:
             records = c.execute('''select * from host_activity
                 where host like ? and topic like ?''', (name, topic,))
