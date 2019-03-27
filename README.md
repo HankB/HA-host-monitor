@@ -53,6 +53,7 @@ uses Python3 and the SQLite database.
 ## Requirements
 
 * Mosquitto package client. (`apt install mosquitto-clients` on Debian and related distros.)
+* `sqlite3` (`apt install sqlite3` )
 * Program to report exceptions `sa.sh`. One I use is
 
 ```shell
