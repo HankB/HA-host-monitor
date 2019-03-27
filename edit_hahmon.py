@@ -27,6 +27,7 @@ Database schema - one table:
 """
 import sqlite3
 import os
+import sys
 import time
 from argparse import ArgumentParser
 
@@ -99,7 +100,7 @@ def insert_host(db_name, name, timeout, topic=None):
         if match_result == 0:
             c.execute('''insert into host_activity values(?,?,?,?,?)''', (
                 name, topic, int(time.time()), timeout, "unknown", ))
-            conn.commit()
+            # conn.commit()
             rc = 0
         elif match_result == -1:
             rc = 2
@@ -108,7 +109,50 @@ def insert_host(db_name, name, timeout, topic=None):
     except:
         rc = 2
 
-    c.close()
+    close_connection(conn)
+    return rc
+
+
+def delete_host(db_name, name, topic=None):
+    """ Delete a host from the database. Return an appropriate status:
+    0 - Deleted
+    1 - host/topic not found.
+    2 - some other error
+    """
+    conn = open_database(db_name)
+    if conn == None:
+        return 2
+
+    try:
+        c = conn.cursor()
+        match_result = host_match(c, name, topic)
+        print("name, topic, match:", name, topic, match_result)
+        if match_result == 1:
+            if topic is not None:
+                rc = c.execute(
+                    '''delete from host_activity where host=? and topic=?''',
+                                (name, topic))
+            else:
+                print("topic is None, name:", name)
+                rc = c.execute(
+                    '''delete from host_activity where host=? and topic is NULL''',
+                                (name))
+
+            print("rc:", rc)
+            conn.commit()
+            rc = 0
+        elif match_result == -1:
+            print("match_result == -1")
+            rc = 2
+        else:
+            rc = 1
+    except sqlite3.OperationalError as msg:
+        print("delete_host:except", msg)
+        rc = 2
+
+    finally:
+        close_connection(conn)
+
     return rc
 
 
@@ -182,7 +226,7 @@ def list_db(db_name, name="%", topic=None):
             result_array.append(result_format.format(*rows))
         rc = (0, result_array)
     except:
-        return (-1, "")
+        rc = (-1, "")
     finally:
         close_connection(conn)
 
