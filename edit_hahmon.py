@@ -184,7 +184,6 @@ def list_db(db_name, name="%", topic=None):
     except:
         return (-1, "")
     finally:
-        c.close()
         close_connection(conn)
 
     return rc
