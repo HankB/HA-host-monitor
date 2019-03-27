@@ -26,7 +26,6 @@ Database schema - one table:
 
 """
 import sqlite3
-import atexit
 import os
 import time
 from argparse import ArgumentParser
@@ -40,7 +39,6 @@ def close_connection(some_con):
 def open_database(db_name):
     try:
         conn = sqlite3.connect(db_name)
-        atexit.register(close_connection, conn)
         return conn
     except:
         return None
