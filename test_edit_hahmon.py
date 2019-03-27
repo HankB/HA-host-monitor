@@ -31,6 +31,14 @@ def unittest_verbosity():
 test_DB_name = "ha_test.db"
 db_path = pathlib.Path(test_DB_name)
 
+hosts = [
+    ("oak", None,               1553542680, 300, 'unknown'),
+    ("oak", "/some/topic",      1553542680, 300, 'unknown'),
+    ("oak", "/someother/topic", 1553542680, 300, 'unknown'),
+    ("maple", None,             1553542680, 300, 'unknown'),
+    ("maple", "/some/topic",    1553542680, 300, 'unknown'),
+]
+
 
 class UpdateHAmonTest(unittest.TestCase):
 
@@ -220,7 +228,27 @@ class UpdateHAmonTest(unittest.TestCase):
                         "DB content match")
 
         # comment next line to allow manual examination of database
-        pathlib.Path.unlink(pathlib.Path(test_DB_name))
+        rc = pathlib.Path.unlink(pathlib.Path(test_DB_name))
+
+    def test_delete_host(self):
+        # create/populate test database
+        try:
+            self.populate_test_DB(test_DB_name, hosts)
+
+            self.assertEqual(
+                edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic'), 0,
+                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
+
+            self.assertEqual(
+                edit_hahmon.delete_host(test_DB_name, 'oak'), 0,
+                             "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
+
+        # comment try:, except: and pathlib.Path.unlink()
+        # to allow manual examination of database
+        # e.g. `sqlite3 ha_test.db 'select * from host_activity;'`
+        # but may result in other tests failing.
+        finally:
+            pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
     def test_update_host_timeout(self):
         if os.path.isfile(test_DB_name):
@@ -283,6 +311,7 @@ class UpdateHAmonTest(unittest.TestCase):
             "single entry DB did not return correct results list_db()")
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
+        # redundant now with global hosts[]
         hosts = [
             ("oak", None,               1553542680, 300, 'unknown'),
             ("oak", "/some/topic",      1553542680, 300, 'unknown'),
