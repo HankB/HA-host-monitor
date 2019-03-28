@@ -126,23 +126,19 @@ def delete_host(db_name, name, topic=None):
     try:
         c = conn.cursor()
         match_result = host_match(c, name, topic)
-        print("name, topic, match:", name, topic, match_result)
         if match_result == 1:
             if topic is not None:
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic=?''',
                                 (name, topic))
             else:
-                print("topic is None, name:", name)
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic is NULL''',
                                 (name,))
 
-            print("rc:", rc)
             conn.commit()
             rc = 0
         elif match_result == -1:
-            print("match_result == -1")
             rc = 2
         else:
             rc = 1
