@@ -311,14 +311,7 @@ class UpdateHAmonTest(unittest.TestCase):
             "single entry DB did not return correct results list_db()")
         pathlib.Path.unlink(pathlib.Path(test_DB_name))
 
-        # redundant now with global hosts[]
-        hosts = [
-            ("oak", None,               1553542680, 300, 'unknown'),
-            ("oak", "/some/topic",      1553542680, 300, 'unknown'),
-            ("oak", "/someother/topic", 1553542680, 300, 'unknown'),
-            ("maple", None,             1553542680, 300, 'unknown'),
-            ("maple", "/some/topic",    1553542680, 300, 'unknown'),
-        ]
+        hosts = globals()['hosts']
         self.populate_test_DB(test_DB_name, hosts)
         (status, results) = edit_hahmon.list_db(test_DB_name)
         self.assertEqual(status, 0, "non-zero status list_db()")
