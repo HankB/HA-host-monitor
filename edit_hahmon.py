@@ -12,6 +12,8 @@ Usage:
                                                         python3 # or all hosts in database
 
     (see parse_args() for expanded argument names.)
+    For all options except -c must provide an environment variable DB_NAME_ENV to
+    indicate where to find the database
 
 To destroy the database simply delete the database file.
 
@@ -189,7 +191,7 @@ def update_host_timeout(db_name, name, timeout, topic=None):
     return rc
 
 
-def list_db(db_name, name="%", topic=None):
+def list_db(db_name, name=None, topic=None):
     """ Create a text list of '\n' seperated records representing
     hosts and their respective records.
     TODO: For now return all rows. For my application that will meet needs.
@@ -201,8 +203,12 @@ def list_db(db_name, name="%", topic=None):
     """
 
     conn = open_database(db_name)
+
     if conn == None:
         return (2, "")
+
+    if name is None:    # none implies all hosts
+        name = '%'
 
     rc = (0, "")    # initialize return value
     try:
@@ -234,11 +240,11 @@ test_DB_name = "hahmon.db"
 
 def usage_msg(name=None):
     return '''edit_hahmon.py
-    [-c | --create [<path/to/database>]] - create new database
-    [-a | --add <hostname> [[<timeout>] <topic>]] - add host (must include timeout if
+    [-c | --create [<path/to/database>] - create new database
+    [-a | --add <hostname> [<timeout>] [<topic>]] - add host (must include timeout if
                                                     specifying topic)
-    [-d | --delete <hostname> [<topic>]] - delete matching host and topic
-    [-l | --list [<hostname>]] - list database for all hosts or selected host
+    [-d | --delete <hostname> [<topic>] - delete matching host and topic
+    [-l | --list [<hostname>] - list database for all hosts or selected host
     '''
 
 
@@ -249,25 +255,28 @@ def parse_args(args):
     parser = ArgumentParser(usage=usage_msg())
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-c", "--create",
-                       dest="db_name", nargs='?',
+                       dest="db_name", nargs='?',       # 0-1 arguments
                        default="",
                        help="create empty database")
-    group.add_argument("-a", "--add",
+    group.add_argument("-a", "--add",                   # 1-3 arguments
                        dest="addhost", nargs='+',
-                       help="add <hostname> [<topic>]")
-    group.add_argument("-d", "--delete",
+                       help="add <hostname> [<timeout sec> [<topic>]]")
+    group.add_argument("-d", "--delete",                # 1-2 arguments
                        dest="delhost", nargs='+',
                        help="delete <hostname> [<topic>]")
-    group.add_argument("-l", "--list",
+    group.add_argument("-l", "--list",                  # 1-2 arguments
                        dest="listhost", nargs='?', default="",
+                       help="list [<hostname>]")
+    group.add_argument("-u", "--update_timeout",        # 3 arguments
+                       dest="listhost", nargs=3, default="",
                        help="list [<hostname>]")
 
     parsed_args = parser.parse_args(args)
 
     # manual validation of arg count for --add
-    if (parsed_args.addhost is not None) and (len(parsed_args.addhost) > 2):
+    if (parsed_args.addhost is not None) and (len(parsed_args.addhost) > 3):
         parser.error(
-            '[-a|--addhost] accepts 1 or 2 arguments, not {}.'.format(len(parsed_args.addhost)))
+            '[-a|--addhost] accepts 1 to 3 arguments, not {}.'.format(len(parsed_args.addhost)))
 
     # manual validation of arg count for --delete
     if (parsed_args.delhost is not None) and (len(parsed_args.delhost) > 2):
@@ -304,9 +313,15 @@ def edit_hahmon_main():
         if args.addhost is not None:  # Add a host/timeout/topic
                                         # oops - no way to add timeout
             topic = None
-            if len(args.addhost) == 2:
-                topic = args.addhost[1]
-            rc = insert_host(hamon_db, args.addhost[0], 300, topic)
+            if len(args.addhost) == 3:
+                topic = args.addhost[2]
+                timeout = args.addhost[1]
+            elif len(args.addhost) == 2:
+                timeout = args.addhost[1]
+            else:
+                timeout = 300
+
+            rc = insert_host(hamon_db, args.addhost[0], timeout, topic)
             if rc != 0:
                 print(
                     "Insert '%s' '%s' not successful:%d" % (args.addhost[0], topic, rc))
@@ -325,6 +340,10 @@ def edit_hahmon_main():
                 print("could not delete host:", args.delhost[
                       0], "topic:", topic, "from", hamon_db, "rc:", rc)
             exit(1)
+        elif args.listhost != '':
+            print("args.listhost", args.listhost)
+            entries = list_db(hamon_db, args.listhost)
+            print(entries)
 
 
 if __name__ == "__main__":
