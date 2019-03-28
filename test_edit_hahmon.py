@@ -235,15 +235,41 @@ class UpdateHAmonTest(unittest.TestCase):
         try:
             self.populate_test_DB(test_DB_name, hosts)
 
+            # delete unknown host
+            self.assertEqual(
+                edit_hahmon.delete_host(
+                    test_DB_name, 'oaknot', '/some/topic'), 1,
+                             "edit_hahmon.delete_host(test_DB_name, 'oaknot', '/some/topic) failed")
+            # delete unknown topic
+            self.assertEqual(
+                edit_hahmon.delete_host(
+                    test_DB_name, 'oak', '/some/notfound/topic'), 1,
+                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/notfound/topic) failed")
+            # delete unknown host, no topic
+            self.assertEqual(
+                edit_hahmon.delete_host(
+                    test_DB_name, 'oaknot'), 1,
+                             "edit_hahmon.delete_host(test_DB_name, 'oaknot'")
+
+            # delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic'), 0,
                              "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
+            # confirm delete
+            self.assertEqual(
+                edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic'), 1,
+                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
 
+            # delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak'), 0,
                              "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
+            # confirm delete
+            self.assertEqual(
+                edit_hahmon.delete_host(test_DB_name, 'oak'), 1,
+                             "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
 
-        # comment try:, except: and pathlib.Path.unlink()
+        # comment out try:, except: and pathlib.Path.unlink()
         # to allow manual examination of database
         # e.g. `sqlite3 ha_test.db 'select * from host_activity;'`
         # but may result in other tests failing.
