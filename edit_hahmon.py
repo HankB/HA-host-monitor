@@ -315,7 +315,15 @@ def edit_hahmon_main():
             topic = None
             if len(args.delhost) == 2:
                 topic = args.delhost[1]
-            print("Oops - no way to delte a host!")
+            else:
+                topic = None
+            rc = delete_host(hamon_db, args.delhost[0], topic)
+            if rc == 0:
+                print("Deleted host:", args.delhost[
+                      0], "topic:", topic, "from", hamon_db)
+            else:
+                print("could not delete host:", args.delhost[
+                      0], "topic:", topic, "from", hamon_db, "rc:", rc)
             exit(1)
 
 
