@@ -27,8 +27,9 @@ and an exception reported for any overdue hosts.
 
 ```test
 edit_hahmon.py          create and update database.
-hahmon.py               placeholder for the 'main'
 test_edit_hahmon.py     unit tests for edit_hahmon.py
+hahmon.py               monitor MQTT broker and log updates to database
+test_hahmon.py          unittest for hahmon.py specific code.
 update_hahmon.py        ? holds presently unused code?
 ```
 
