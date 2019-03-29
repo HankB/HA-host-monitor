@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Test program for hahmon (Home Automation Host Monitor)
+Test program for edit_hahmon (Home Automation Host Monitor)
 """
 
 import edit_hahmon
@@ -146,7 +146,7 @@ class UpdateHAmonTest(unittest.TestCase):
         timestamp_before = str(int(time.time()))
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60), 0,
-                         "call insert_host()")
+            "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
             db_content = db_read.read()
@@ -159,7 +159,7 @@ class UpdateHAmonTest(unittest.TestCase):
         # repeat insert should be rejected. DB contents should remain the same
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60), 1,
-                         "call insert_host()")
+            "call insert_host()")
 
         with os.popen('sqlite3 ha_test.db "select * from host_activity"') as db_read:
             db_content = db_read.read()
@@ -173,7 +173,7 @@ class UpdateHAmonTest(unittest.TestCase):
         timestamp_before = str(int(time.time()))
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "olive", 60 * 60), 0,
-                         "call insert_host()")
+            "call insert_host()")
         timestamp_after = str(int(time.time()))
 
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
@@ -189,7 +189,7 @@ class UpdateHAmonTest(unittest.TestCase):
         timestamp_before = str(int(time.time()))
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "x"), 0,
-                         "call insert_host()")
+            "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'x\'"''') as db_read:
@@ -203,7 +203,7 @@ class UpdateHAmonTest(unittest.TestCase):
         # test duplicate rejection with topic
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "x"), 1,
-                         "call insert_host()")
+            "call insert_host()")
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'x\'"''') as db_read:
             db_content = db_read.read()
@@ -216,7 +216,7 @@ class UpdateHAmonTest(unittest.TestCase):
         timestamp_before = str(int(time.time()))
         self.assertEqual(
             edit_hahmon.insert_host(test_DB_name, "oak", 60 * 60, "y"), 0,
-                         "call insert_host()")
+            "call insert_host()")
         timestamp_after = str(int(time.time()))
         with os.popen('''sqlite3 ha_test.db "select * from host_activity
                         where host=\'oak\' and topic=\'y\'"''') as db_read:
@@ -239,35 +239,35 @@ class UpdateHAmonTest(unittest.TestCase):
             self.assertEqual(
                 edit_hahmon.delete_host(
                     test_DB_name, 'oaknot', '/some/topic'), 1,
-                             "edit_hahmon.delete_host(test_DB_name, 'oaknot', '/some/topic) failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oaknot', '/some/topic) failed")
             # delete unknown topic
             self.assertEqual(
                 edit_hahmon.delete_host(
                     test_DB_name, 'oak', '/some/notfound/topic'), 1,
-                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/notfound/topic) failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/notfound/topic) failed")
             # delete unknown host, no topic
             self.assertEqual(
                 edit_hahmon.delete_host(
                     test_DB_name, 'oaknot'), 1,
-                             "edit_hahmon.delete_host(test_DB_name, 'oaknot'")
+                "edit_hahmon.delete_host(test_DB_name, 'oaknot'")
 
             # delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic'), 0,
-                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
             # confirm delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic'), 1,
-                             "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oak', '/some/topic) failed")
 
             # delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak'), 0,
-                             "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
             # confirm delete
             self.assertEqual(
                 edit_hahmon.delete_host(test_DB_name, 'oak'), 1,
-                             "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
+                "edit_hahmon.delete_host(test_DB_name, 'oak') failed")
 
         # comment out try:, except: and pathlib.Path.unlink()
         # to allow manual examination of database
@@ -298,7 +298,7 @@ class UpdateHAmonTest(unittest.TestCase):
         # Update first record
         self.assertEqual(
             edit_hahmon.update_host_timeout(test_DB_name, "oak", 350), 0,
-                         "call update_host()")
+            "call update_host()")
 
         # Validate first and second record inserted
         self.validate_record("oak", timestamp_before, 350)
@@ -391,7 +391,7 @@ class UpdateHAmonTest(unittest.TestCase):
                          "correct result count list_db(db,topic='/someother/topic')")
         self.assertEqual(
             results, ['oak /someother/topic 1553542680 300 unknown'],
-                         "multiple entry DB did not return correct results list_db(db,topic='/someother/topic')")
+            "multiple entry DB did not return correct results list_db(db,topic='/someother/topic')")
 
         (status, results) = edit_hahmon.list_db(
             test_DB_name, topic='/some/topic')
@@ -402,7 +402,7 @@ class UpdateHAmonTest(unittest.TestCase):
         self.assertEqual(
             results, ['oak /some/topic 1553542680 300 unknown',
                       'maple /some/topic 1553542680 300 unknown', ],
-                         "multiple entry DB did not return correct results list_db(db,topic='/some/topic')")
+            "multiple entry DB did not return correct results list_db(db,topic='/some/topic')")
 
         # test filtering host and topic
         (status, results) = edit_hahmon.list_db(
@@ -430,7 +430,7 @@ class UpdateHAmonTest(unittest.TestCase):
                          "correct result count list_db(db,'maple', '/some/topic')")
         self.assertEqual(
             results, ['maple /some/topic 1553542680 300 unknown', ],
-                         "incorrect results list_db(db,'maple', '/some/topic')")
+            "incorrect results list_db(db,'maple', '/some/topic')")
 
         # TODO: Errata: Present logic does not support searching for host(s) with no topic.
         # unspecified topic is treated like a wild card.
@@ -446,8 +446,8 @@ class UpdateHAmonTest(unittest.TestCase):
             def write(self, s):
                 pass
         sys.stderr = NullDevice()
-                                # suppress output to STDERR generated by
-                                # successful test
+        # suppress output to STDERR generated by
+        # successful test
 
         # test invalid argument
         with self.assertRaises(SystemExit, msg="exit on [-x]"):
