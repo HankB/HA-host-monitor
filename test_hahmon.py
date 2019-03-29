@@ -4,7 +4,8 @@
 Test program for edit_hahmon (Home Automation Host Monitor)
 """
 
-import edit_hahmon
+import hahmon
+#import edit_hahmon
 import unittest
 
 # example data
@@ -16,3 +17,15 @@ home_automation/latham/dining_room_W/temp_humidity 1553831161, 70.93, 30.95
 home_automation/skeena/garage_eave/outside_temp_humidity 1553831161, 49.87, 61.56
 '''
 ]
+
+
+class UpdateHAmonTest(unittest.TestCase):
+
+    def test_parse_MQTT_msg(self):
+        rc = hahmon.parse_MQTT_msg('ha/brandywine/roamer/outside_temp_humidity 1553831160, 47.54, 76.44')
+        self.assertEqual( rc, ('brandywine', '/roamer/outside_temp_humidity', 1553831160),
+        "parse_MQTT_msg()" )
+
+
+if __name__ == "__main__":
+    unittest.main()
