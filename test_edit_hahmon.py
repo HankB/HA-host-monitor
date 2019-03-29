@@ -505,7 +505,7 @@ class UpdateHAmonTest(unittest.TestCase):
         with self.assertRaises(SystemExit,
                                msg="exit on superfluous arg ['-a', 'somehost', 'sometopic', 'superfluous']"):
             edit_hahmon.parse_args(
-                ['-a', 'somehost', 'sometopic', 'superfluous'])
+                ['-a', 'somehost', '300', 'sometopic', 'superfluous'])
 
         # test 'delete' arguments
         with self.assertRaises(SystemExit, msg="didn't exit on [-d]"):
