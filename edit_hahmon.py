@@ -132,7 +132,7 @@ def delete_host(db_name, name, topic=None):
             if topic is not None:
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic=?''',
-                                (name, topic))
+                    (name, topic))
             else:
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic is NULL''',
