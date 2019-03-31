@@ -136,7 +136,7 @@ def delete_host(db_name, name, topic=None):
             else:
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic is NULL''',
-                    (name,))
+                                (name,))
 
             conn.commit()
             rc = 0
@@ -295,7 +295,7 @@ def edit_hahmon_main():
     DB_NAME_ENV = 'DB_NAME_ENV'
 
     if args.db_name != "":      # create new DB?
-        hamon_db = "hamon.db"  # default database name
+        hamon_db = "hahmon.db"  # default database name
         if args.db_name != None:
             hamon_db = args.db_name
         rc = create_database(hamon_db)
