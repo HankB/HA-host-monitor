@@ -136,7 +136,7 @@ def delete_host(db_name, name, topic=None):
             else:
                 rc = c.execute(
                     '''delete from host_activity where host=? and topic is NULL''',
-                                (name,))
+                    (name,))
 
             conn.commit()
             rc = 0
