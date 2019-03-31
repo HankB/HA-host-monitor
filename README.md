@@ -29,13 +29,14 @@ and an exception reported for any overdue hosts.
 edit_hahmon.py          create and update database.
 test_edit_hahmon.py     unit tests for edit_hahmon.py
 hahmon.py               monitor MQTT broker and log updates to database
+paho_hahmon.py          variant of hahmon.py that uses paho-mqtt to subscribe.
 test_hahmon.py          unittest for hahmon.py specific code.
 update_hahmon.py        ? holds presently unused code?
 ```
 
 ## Status
 
-Working on the process to create and add/remove hosts in the database. (TDD - one test coded.)
+`paho_hahmon.py` subscribed to MQTT server and reports messages to console.
 
 ## Testing
 
