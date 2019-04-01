@@ -37,6 +37,8 @@ update_hahmon.py        ? holds presently unused code?
 ## Status
 
 `paho_hahmon.py` subscribed to MQTT server and reports messages to console.
+Will perform some testing with this to see what happens when network or
+broker cannot be reached or lose an already established connection.
 
 ## Testing
 
