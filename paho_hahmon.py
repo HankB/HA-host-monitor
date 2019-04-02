@@ -120,13 +120,27 @@ def insert_data(timestamp, host, location, description, payload):
 '''
 
 
+''' Parse command line arguments in a testable fashion
+def parse_args(args):
+
+    parser = ArgumentParser()
+    parser.add_argument("-d", "--db_name",
+                        dest="db_name", nargs=1,       # 1 argument
+                        default="hahmon.db",
+                        help="/path/to/database")
+
+    parsed_args = parser.parse_args(args)
+
+    return parsed_args
+'''
+
+
 def paho_hahmon_main():
 
-    hamon_db = os.environ.get('DB_NAME_ENV')
-    if hamon_db is None:
-        print('Please specify the database location')
-        print('e.g. \'export  DB_NAME_ENV=path/to/database\'')
-        exit(1)
+    '''
+    args = parse_args(argv[1:])
+    print("args", args)
+    '''
 
     client = mqtt.Client()
     client.on_connect = on_connect
