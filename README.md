@@ -57,6 +57,10 @@ uses Python3 and the SQLite database.
 ## Requirements
 
 * Mosquitto package client. (`apt install mosquitto-clients` on Debian and related distros.)
+
+or
+
+* Python paho-mqtt module (`pip3 install paho-mqtt` on Debian Stretch)
 * `sqlite3` (`apt install sqlite3` )
 * Program to report exceptions `sa.sh`. One I use is
 
