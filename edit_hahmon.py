@@ -304,7 +304,7 @@ def edit_hahmon_main():
         else:
             print("created database", hamon_db)
             print("set ENV variale for using other options")
-            print("e.g.'export DB_NAME_ENV="+ os.getcwd() + '/' + hamon_db)
+            print("e.g.'export DB_NAME_ENV=" + os.getcwd() + '/' + hamon_db)
         exit(rc)
     else:
         hamon_db = os.environ.get(DB_NAME_ENV)
