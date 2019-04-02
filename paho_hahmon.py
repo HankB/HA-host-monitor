@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-""" 
-Subscribe to the MQTT server used for home automation and 
+"""
+Subscribe to the MQTT server used for home automation and
 
 
 Modified from recorder.py in ssh://git@oak:10022/HankB/home_automation-MQTT-recorder.git
 since there is a *lot* of overlap in functionality. This variant subscribes
-to the messages and updates the host monitor database. Following the convention 
+to the messages and updates the host monitor database. Following the convention
 used by edit_hahmon.py and use the environment variable to identify the database
 
 store
@@ -18,13 +18,15 @@ The topic includes the host name as the second field. For example:
 
 
 
-""" 
+"""
 import sqlite3
 import atexit
 import re
 import os
+import time
 
 # db_name = 'home_automation-MQTT.db'
+
 
 def close_connection(some_con):
     some_con.commit()
@@ -42,35 +44,41 @@ e g for
     payload '1553884981, 70.95, 29.16'
 return ('sodus', '/master_bedroom/temp_humidity', 1553884981)
 '''
-def parse_mqtt_msg(topic, payload):  
+
+
+def parse_mqtt_msg(topic, payload):
     topic = re.split('\W+', topic)  # now split on space, comma
-    host=topic[1]
-    topic = '/'+topic[2]+'/'+topic[3]
+    host = topic[1]
+    topic = '/' + topic[2] + '/' + topic[3]
     payload = re.split('\W+', payload)  # now split on space, comma
     timestamp = int(payload[0])
     return (host, topic, timestamp)
 
-### copied from https://www.eclipse.org/paho/clients/python/
+# copied from https://www.eclipse.org/paho/clients/python/
 import paho.mqtt.client as mqtt
 
 # The callback for when the client receives a CONNACK response from the server.
+
+
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
+    print("Connected with result code " + str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     # client.subscribe("$SYS/#")
 
 # The callback for when a PUBLISH message is received from the server.
+
+
 def on_message(client, userdata, msg):
-    #payload=str(msg.payload)
-    payload=msg.payload.decode("utf-8")
-    print("payload \'"+payload+'\'')
-    print("topic \'"+msg.topic+'\'')
+    # payload=str(msg.payload)
+    payload = msg.payload.decode("utf-8")
+    print("payload \'" + payload + '\'')
+    print("topic \'" + msg.topic + '\'')
     print(parse_mqtt_msg(msg.topic, payload))
     print()
-    #print(msg.topic+" "+payload)
+    # print(msg.topic+" "+payload)
     #(root, host, location, description) = msg.topic.split('/')
-    #print("topic fields", root, host, location, description)
+    # print("topic fields", root, host, location, description)
     '''
     fields = msg.topic.split('/')
     print(fields)
@@ -95,8 +103,10 @@ def on_message(client, userdata, msg):
     insert_data(ts, host, location, description, value)
     '''
 
+
 def on_publish(client, userdata, mid):
     print("on_publish(", client, userdata, mid, ")")
+
 
 def on_subscribe(client, userdata, mid, granted_qos):
     print("on_subscribe()")
@@ -109,7 +119,8 @@ def insert_data(timestamp, host, location, description, payload):
     conn.commit()
 '''
 
-def paho_hahnon_main():
+
+def paho_hahmon_main():
 
     hamon_db = os.environ.get('DB_NAME_ENV')
     if hamon_db is None:
@@ -121,17 +132,23 @@ def paho_hahnon_main():
     client.on_connect = on_connect
     client.on_message = on_message
 
-    client.connect("oak", 1883, 60)	# connect to my MQTT server
-
-    client.subscribe("#")   # subscribe to everything for now
-    # Blocking call that processes network traffic, dispatches callbacks and
-    # handles reconnecting.
-    # Other loop*() functions are available that give a threaded interface and a
-    # manual interface. (changed to non-blocking call)
     while(1):
-        client.loop()
-    ### end of included code
-    print( "finished loop") # Shouldn't get here, no?
+        try:
+            client.connect("contorta", 1883, 60)  # connect to my MQTT server
+
+            client.subscribe("#")   # subscribe to everything for now
+            # Blocking call that processes network traffic, dispatches callbacks and
+            # handles reconnecting.
+            # Other loop*() functions are available that give a threaded interface and a
+            # manual interface. (changed to non-blocking call)
+            while(1):
+                client.loop()
+            # end of included code
+            print("finished loop")  # Shouldn't get here, no?
+
+        except Exception as Argument:
+            print("Exception", Argument)
+            time.sleep(5)
 
 
-paho_hahnon_main()
+paho_hahmon_main()
