@@ -24,6 +24,8 @@ import atexit
 import re
 import os
 import time
+from argparse import ArgumentParser
+from sys import argv
 
 # db_name = 'home_automation-MQTT.db'
 
@@ -136,7 +138,6 @@ def parse_args(args):
 
 
 def paho_hahmon_main():
-
     '''
     args = parse_args(argv[1:])
     print("args", args)
@@ -148,7 +149,8 @@ def paho_hahmon_main():
 
     while(1):
         try:
-            client.connect("contorta", 1883, 60)  # connect to my MQTT server
+            client.connect("contorta", 1883, keepalive=60)
+                           # connect to my MQTT server
 
             client.subscribe("#")   # subscribe to everything for now
             # Blocking call that processes network traffic, dispatches callbacks and
