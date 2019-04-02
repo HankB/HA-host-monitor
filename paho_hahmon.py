@@ -59,11 +59,16 @@ def parse_mqtt_msg(topic, payload):
 # copied from https://www.eclipse.org/paho/clients/python/
 import paho.mqtt.client as mqtt
 
+
+last_activity_sec = 0
+
 # The callback for when the client receives a CONNACK response from the server.
 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
+    global last_activity_sec
+    last_activity_sec = int(time.time())
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     # client.subscribe("$SYS/#")
@@ -72,6 +77,8 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, msg):
+    global last_activity_sec
+    last_activity_sec = int(time.time())
     # payload=str(msg.payload)
     payload = msg.payload.decode("utf-8")
     print("payload \'" + payload + '\'')
@@ -147,6 +154,8 @@ def paho_hahmon_main():
     client.on_connect = on_connect
     client.on_message = on_message
 
+    global last_activity_sec
+
     while(1):
         try:
             client.connect("contorta", 1883, keepalive=60)
@@ -159,6 +168,12 @@ def paho_hahmon_main():
             # manual interface. (changed to non-blocking call)
             while(1):
                 client.loop()
+                if last_activity_sec != 0 and (int(time.time()) - last_activity_sec) > 90:
+                    last_activity_sec = 0
+                    print("last_activity_sec disconnect exercised")
+                    client.disconnect()
+                    break
+
             # end of included code
             print("finished loop")  # Shouldn't get here, no?
 
