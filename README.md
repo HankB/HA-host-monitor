@@ -14,6 +14,21 @@ an exception report will be sent. Periodically The database is scanned and
 the time since last update compared to a constant stored in the database
 and an exception reported for any overdue hosts.
 
+## Reliability of Broker Connection
+
+Due to the nature of this task, it is of upmost importance that the connection
+to the broker be absolutely reliable. It must recover from the following
+conditions:
+
+* Loss of network connectivity on the client
+* loss of network connectivity on the broker host
+* reboot of broker host
+* shutdown and restart of broker service
+
+Initial testing with `mosquitto_sub` indicates it reliably performs this function.
+With some additional logic the `paho-mqtt` module can do this as well.
+
+
 ## Components
 
 1. Process to create and edit database entries.
@@ -38,7 +53,8 @@ update_hahmon.py        ? holds presently unused code?
 
 `paho_hahmon.py` subscribed to MQTT server and reports messages to console.
 Will perform some testing with this to see what happens when network or
-broker cannot be reached or lose an already established connection.
+broker cannot be reached or lose an already established connection. See
+"Reliability of Broker Connection" above.
 
 ## Testing
 
