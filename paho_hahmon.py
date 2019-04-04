@@ -37,7 +37,7 @@ return ('sodus', '/master_bedroom/temp_humidity', 1553884981)
 '''
 
 
-def parse_mqtt_msg(topic, payload):
+def parse_MQTT_msg(topic, payload):
     topic = re.split('\W+', topic)  # now split on space, comma
     host = topic[1]
     topic = '/' + topic[2] + '/' + topic[3]
