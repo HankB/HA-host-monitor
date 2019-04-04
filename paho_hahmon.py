@@ -72,7 +72,7 @@ def on_message(client, userdata, msg):
     payload = msg.payload.decode("utf-8")
     print("payload \'" + payload + '\'')
     print("topic \'" + msg.topic + '\'')
-    print(parse_mqtt_msg(msg.topic, payload))
+    print(parse_MQTT_msg(msg.topic, payload))
     print()
     # print(msg.topic+" "+payload)
     #(root, host, location, description) = msg.topic.split('/')
