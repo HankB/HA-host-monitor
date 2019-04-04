@@ -28,7 +28,6 @@ conditions:
 Initial testing with `mosquitto_sub` indicates it reliably performs this function.
 With some additional logic the `paho-mqtt` module can do this as well.
 
-
 ## Components
 
 1. Process to create and edit database entries.
@@ -43,9 +42,9 @@ With some additional logic the `paho-mqtt` module can do this as well.
 ```test
 edit_hahmon.py          create and update database.
 test_edit_hahmon.py     unit tests for edit_hahmon.py
-hahmon.py               monitor MQTT broker and log updates to database
-paho_hahmon.py          variant of hahmon.py that uses paho-mqtt to subscribe.
-test_hahmon.py          unittest for hahmon.py specific code.
+hahmon.py               Common functionality shared by paho_hahmon.py (as yet not coded) mosquitto_hahmon.py)
+paho_hahmon.py          Code to receive MQTT messages using module paho-mqtt to subscribe.
+test_hahmon.py          unittest for hahmon.py, paho_hahmon.py specific code.
 update_hahmon.py        ? holds presently unused code?
 ```
 
@@ -62,6 +61,7 @@ broker cannot be reached or lose an already established connection. See
 ./test_edit_hahmon.py
 ./test_edit_hahmon.py UpdateHAmonTest.test_create_database
 ./test_edit_hahmon.py UpdateHAmonTest.test_parse_args 2>/dev/null
+./test_hahmon.py
 ```
 
 ## Environment
