@@ -1,13 +1,36 @@
 #!/usr/bin/env python3
 '''
-Monitor hosts 
+Monitor hosts
 Read output of mosquitto_sub
 e.g. `mosquitto_sub -v -h oak -t \#`
-Process all messages and update the database according to 
+Process all messages and update the database according to
 the incoming messages.
+
+This fiunction is broken into two files. This one will implement the code
+needed for either of two variants. One variant will implement using the
+module paho-mqtt and the other will use an external program `mosquitto_sub`
+to receive messages from the broker.
 '''
 
 import re
+import sqlite3
+import atexit
+from argparse import ArgumentParser
+
+
+def close_db_connection(some_con):
+    some_con.commit()
+    some_con.close()
+
+''' open database and return a connection and cursor
+'''
+
+
+def open_db_connection(db_name):
+    conn = sqlite3.connect(db_name)
+    atexit.register(close_db_connection, conn)
+    c = conn.cursor()
+    return (conn, c)
 
 
 def parse_MQTT_msg(line):
@@ -30,3 +53,24 @@ def parse_MQTT_msg(line):
         return None
     timestamp = int(fields[4])
     return (host, topic, timestamp,)
+
+''' parse_args()
+Parse command line arguments in a testable fashion
+'''
+
+
+def parse_args(args):
+
+    parser = ArgumentParser()
+    parser.add_argument("-d", "--db_name",
+                        dest="db_name", nargs=1,       # 1 argument
+                        required=True,
+                        help="/path/to/database")
+    parser.add_argument("-b", "--broker",
+                        dest="broker", nargs=1,       # 1 argument
+                        required=True,
+                        help="MQTT broker host name")
+
+    parsed_args = parser.parse_args(args)
+
+    return parsed_args

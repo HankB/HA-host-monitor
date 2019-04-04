@@ -19,26 +19,15 @@ The topic includes the host name as the second field. For example:
 
 
 """
-import sqlite3
-import atexit
+import hahmon
 import re
 import os
 import time
-from argparse import ArgumentParser
 from sys import argv
 
 # db_name = 'home_automation-MQTT.db'
 
 
-def close_connection(some_con):
-    some_con.commit()
-    some_con.close()
-
-'''
-conn = sqlite3.connect(db_name)
-atexit.register(close_connection, conn)
-c = conn.cursor()
-'''
 '''
 Parse the topic and payload to extract host, rest of topic and timestamp.
 e g for
@@ -129,36 +118,21 @@ def insert_data(timestamp, host, location, description, payload):
 '''
 
 
-''' Parse command line arguments in a testable fashion
-def parse_args(args):
-
-    parser = ArgumentParser()
-    parser.add_argument("-d", "--db_name",
-                        dest="db_name", nargs=1,       # 1 argument
-                        default="hahmon.db",
-                        help="/path/to/database")
-
-    parsed_args = parser.parse_args(args)
-
-    return parsed_args
-'''
-
-
 def paho_hahmon_main():
-    '''
-    args = parse_args(argv[1:])
+    args = hahmon.parse_args(argv[1:])
     print("args", args)
-    '''
 
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
 
+    (conn, cursor) = hahmon.open_db_connection(args.db_name[0])
+
     global last_activity_sec
 
     while(1):
         try:
-            client.connect("contorta", 1883, keepalive=60)
+            client.connect(args.broker[0], 1883, keepalive=60)
                            # connect to my MQTT server
 
             client.subscribe("#")   # subscribe to everything for now
